@@ -1,0 +1,32 @@
+<?
+ini_set("include_path",".:../classes:../includes:" . ini_get('include_path'));
+require("standard.inc.php");
+
+$debug = 1;
+
+set_time_limit(0);
+
+require_once 'XML/Unserializer.php';
+
+$options = array('complexType' => 'object','parseAttributes' => TRUE );
+$unserializer = &new XML_Unserializer($options);
+    
+if($debug) print "Parsing Data ...\n";
+flush();
+if(!$unserializer->unserialize("/home/wtatam/.gjay/data.xml",true)) die("unserize failed");
+    
+$gjay = $unserializer->getUnserializedData();
+unset($unserializer);
+foreach($gjay->file as $file) {
+	if($file->bpm && $file->path) {
+		$track = new track();
+		if($track->getTrackByPath($file->path)) {
+			if($debug) echo "Setting $track->name's bpm to $file->bpm based on " . basename($file->path) . "\n";
+			$track->setField('bpm',$file->bpm);
+		}
+	}
+	else {
+		if($debug >= 2) echo "BPM undefined for $file->path\n";
+	}
+}
+?>

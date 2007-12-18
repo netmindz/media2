@@ -1,0 +1,122 @@
+body { 
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: #666666;
+	color: #FFFFFF;
+}
+
+a {
+	color: #D37C83;
+}
+
+a:hover {
+	color: white;
+}
+
+h1, h2 {
+	text-align: center;
+	margin-bottom: 5px;
+	margin-top: 5px;
+}
+
+.small {
+	font-size: 9px;
+}
+
+div#listing {
+	text-align:center;
+}
+
+div#listing table{
+	background: #F1EFE2;
+}
+
+div#listing td {
+	background: #5F0D13;
+	border: 1px solid #B6545E;
+	color: #F1EFE2;
+	font-weight : bold;
+}
+
+div#listing th {
+    border: 1px solid #F1EFE2;
+	background-color: #D9D5C4; 
+	color: #666666;
+}
+
+.similar {
+   	border: 1px solid #F1EFE2;
+	background-color: #D9D5C4; 
+	color: #666666;
+	width: 250px;
+    float: right;
+	font-size: 14px;
+}
+
+div#listing a {
+	color: #D37C83;
+}
+
+div#listing a:hover {
+	color: #D37C83;
+}
+/*
+#666666
+#F1EFE2
+
+bg #871019
+border #B6545E
+text #FFD2D3
+Link #D37C83
+*/
+
+div#nav {
+	width: 100%;
+	padding: 5px;
+	text-align : center;
+	}
+	
+div#nav a {
+	font-weight: bold;
+	text-decoration: none;
+	text-align: center;
+	vertical-align: middle;
+	width: 100px;
+	height: 20px;
+	margin-right: 1px;
+	padding-top: 2px;
+	color: #666666;
+	}
+	
+
+div#nav a:active {
+	color: #666666;
+	}
+	
+div#nav a:hover {
+	color: #666666;
+	}
+
+div#nav a:visited {
+	color: #666666;
+	}
+
+div#navmain {
+/*	float: left;*/
+	}
+	
+div#navmain a {
+	background-color:  #D9D5C4;
+	}
+	
+div#navmain a:hover {
+	background-color: #F1EFE2;
+	}
+	
+div#navbrowse a {
+	background-color: #F1EFE2;
+	}
+	
+div#navbrowse a:hover {
+	background-color:  #D9D5C4;
+	}
+
