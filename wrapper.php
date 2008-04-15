@@ -18,7 +18,7 @@ $source = new source();
 $source->getBestSource($track_id);
 
 if(!$source->path) {
-	mail("wtatam@premierit.com","404","path=$source->path id=$track_id");
+	mail("root","404","path=$source->path id=$track_id");
 	header("Location: http://wtatam.premierit.com/media2/splat.mp3");
 	exit();
 }
@@ -37,7 +37,7 @@ $artist_pref = new type_pref("artist",$track->artist_id);
 $album_pref = new type_pref("album",$track->album_id);
 $genre_pref = new type_pref("genre",$track->genre_id);
 
-$fh = fopen($source->path,r);
+$fh = fopen($source->path,'r');
 $filename = basename($source->path);
 $mime = mime_type($source->path);
 if(!$mime) exit("no mime type");
@@ -47,9 +47,9 @@ header("Content-Length: ".filesize($source->path));
 header("Content-Disposition: attachment;filename=" . basename($source->path));
 
 $headers = getallheaders();
-$range =$headers['Range'];
-if ( isset( $range ) )
+if ( isset( $headers['Range'] ) )
 {
+	$range =$headers['Range'];
         // The range field should look something like this:
         //      bytes=7483940-.
         // It will always start with bytes=.  We don't care about that so
@@ -73,7 +73,7 @@ $mp3 = fopen($source->path, "r" );
 fseek($mp3,$range);
 $data = fread( $mp3, $chunk_size);
 while( strlen( $data ) > 0 ) {
-	if(!$headers['Range']) {
+	if(!isset($headers['Range'])) {
 	 	if(($chunks > 1)&&(!$logged)) {
 			$track_pref->incPlayCount($track_id);
 			$track_pref->updatePref($track_id,-10);
