@@ -99,7 +99,12 @@ class source extends source_template {
 	function getTRM()
 	{
 		exec("id3info \"$this->path\" | grep 'MusicBrainz TRM Id' | awk '{ print $10}'",$id3results);
-		$trm = trim($id3results[0]);
+		if(count($id3results)) {
+			$trm = trim($id3results[0]);
+		}
+		else {
+			$trm = "";
+		}
 		if(ereg('^[0-9a-z-]+$',$trm)) {
 			print "got trm from ID3 ($trm)\n";
 			return($trm);

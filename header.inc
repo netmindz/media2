@@ -35,7 +35,7 @@ $as_account->getByUsername(get_remote_username());
 <a href="browse.php?type=genre">Genre</a>
 </div>
 <form action="search.php" method="post">
-Search <input type="text" name="keyword" value="<?= $_POST['keyword'] ?>"><input type="submit" value=" Search ">
+Search <input type="text" name="keyword" value="<? if(isset($_POST['keyword'])) print $_POST['keyword'] ?>"><input type="submit" value=" Search ">
 </form>
 </div>
 <?

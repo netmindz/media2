@@ -1,7 +1,7 @@
 <?
-require("premier_common.php");
+require("/home/www/codebase/premier_common.php");
 require("site_config.inc.php");
-require("database.php");
+require("/home/www/codebase/database.php");
 require("artist.php");
 require("album.php");
 require("genre.php");
@@ -54,7 +54,7 @@ function get_remote_username()
 function get_http_mount_point()
 {
 	//if(!ereg('^192\.168\.1\.|^192\.168\.42|^192\.168\.1\.188',ip_get_visitor())) {
-		$mount = "myworkpc.netmindz.net/music2";
+		$mount = "flat.netmindz.net/~will/music2";
 	/*}
 	else {
 		$mount = "wtatam.premierit.com/music2";
@@ -64,5 +64,5 @@ function get_http_mount_point()
 
 $track_type_list = array("artist","album","genre");
 
-$CONF['rpms'] = array("libmusicbrainz-cli","libtunepimp","gjay","php-pear-XML-Serializer","libtunepimp-tools");
+$CONF['rpms'] = array("trm","libtunepimp","gjay","php-pear-XML-Serializer","libtunepimp-tools");
 ?>

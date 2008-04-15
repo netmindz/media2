@@ -81,7 +81,7 @@ else {
 		<?php if($type == "artist") { ?><h3><a href="playlist.php?type=like&id=<?= $id ?>">Listen to artists like <?= $typeObj->DN ?></a></h2><?php } ?>
 	
 	 [ <a href="type_edit.php?type=<?= $type ?>&id=<?= $id ?>">edit</a> ]
-		<? if(!$type_pref_updated) { ?><p align="center">Do you <a href="update_type_pref.php?type=<?= $type ?>&id=<?= $id ?>&mod=love"><img src="i/love.png" border="0" alt="love" title="Love this <?= $type ?>"></a> or <a href="update_type_pref.php?type=<?= $type ?>&id=<?= $id ?>&mod=hate"><img src="i/hate.png" border="0" alt="hate" 	title="Hate this <?= $type ?>"></a> this <?= $type ?></p><? }  else { ?><p align="center">Preferance Updated</p><? } ?>
+		<? if(!isset($type_pref_updated)) { ?><p align="center">Do you <a href="update_type_pref.php?type=<?= $type ?>&id=<?= $id ?>&mod=love"><img src="i/love.png" border="0" alt="love" title="Love this <?= $type ?>"></a> or <a href="update_type_pref.php?type=<?= $type ?>&id=<?= $id ?>&mod=hate"><img src="i/hate.png" border="0" alt="hate" 	title="Hate this <?= $type ?>"></a> this <?= $type ?></p><? }  else { ?><p align="center">Preferance Updated</p><? } ?>
 	
 		<?	if($typeObj->mb_id) { ?>
 		<h4><a href="http://musicbrainz.org/<?= $type ?>/<?= $typeObj->mb_id ?>.html" target="mb_<?= $type ?>">Music Brainz Listing</a></h4>
@@ -182,7 +182,7 @@ else {
 	}
 	
 	track_footer();
-	if((!$amazon_details)&&($type == "album")) amazon_getAlbum($artists,$typeObj->name,$typeObj->amazon_asin);
+	if((!isset($amazon_details))&&($type == "album")) amazon_getAlbum($artists,$typeObj->name,$typeObj->amazon_asin);
 }
 
 

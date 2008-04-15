@@ -6,7 +6,7 @@ foreach($CONF['rpms'] as $rpm) {
 	exec("rpm -q $rpm",$result,$error);
 	if($error) {
 		print "ERROR: $rpm is required\n";
-		exit(1);
+	#	exit(1);
 	}
 }
 
@@ -196,7 +196,10 @@ if((!$argv[1])||($argv[1] == "localhost")) {
 	$hostname = array_shift($host_parts);
 	print "localhost = $hostname\n";
 	$host->getByOther(array("hostname"=>$hostname));
-	if(!$host->id) exit("failed to find self in hosts table");
+	if(!$host->id) {
+		$host->setProperties(array("hostname"=>$hostname));
+		$host->add();
+	}
 	print "scanning local host ($host->id)\n";
 	scan_directory($CONF['music_base'],$host->id);
 	check_existing_files($host->id);

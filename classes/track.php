@@ -261,12 +261,12 @@ class track extends track_template {
 				$this->name = $details['track'];
 			}
 
-			$this->year =  $details['year'];
+			if(isset($details['year'])) $this->year =  $details['year'];
 
 
 			$this->tracknum  = $details['tracknum'];
 
-			$this->duration = $details['duration'];
+			if(isset($details['duration'])) $this->duration = $details['duration'];
 			
 			$this->mb_verified = $details['mb_verified'];
 			

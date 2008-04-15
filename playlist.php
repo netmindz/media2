@@ -3,7 +3,7 @@ require("header.php");
 
 
 $track = new music_list();
-$track->debug = $_GET['debug'];
+if(isset($_GET['debug'])) $track->debug = $_GET['debug'];
 if($type == "like") {
 	$list = $track->getTypeLikePlaylist($id,25);
 }

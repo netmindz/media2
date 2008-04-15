@@ -1,5 +1,5 @@
 <?
-$CONF['db_host'] = "wtatam.premierit.com";
+#$CONF['db_host'] = "wtatam.premierit.com";
 $CONF['db_name'] = "music";
 $CONF['db_username'] = "music";
 $CONF['db_pass'] = "musicpass";
