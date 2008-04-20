@@ -31,7 +31,7 @@ class music_list extends music_list_template {
 
 		function getTypeListPlaylist($type,$id)
 		{
-			if($type != "album") $order = "order by rand()";
+			if($type != "album") { $order = "order by rand()"; } else { $order = ""; }
 			$this->getList("where {$type}_id='$id'",$order);
 			while($this->getNext()) {
 				$row = array();
@@ -218,6 +218,8 @@ class music_list extends music_list_template {
 				}
 			
 				$used_selection = array();
+				$selection = array();
+				$sanity = 0;
 				while((count($selection) < $limit)&&($sanity < 10000)) {	
 //					$this->debugPrint(1,"There are less than twice the number of required tracks, min=$min\n");
 					// get random track id

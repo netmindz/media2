@@ -30,14 +30,14 @@ class track extends track_template {
 		exec("gettrm $this->trm",$results);
 		print "~";
 		
-		if(trim($results[0]) == "That TRM is not in the database") {
+		$trm_details_list = array();
+		if(count($results) && trim($results[0]) == "That TRM is not in the database") {
 			print "Uknown TRM: $this->trm\n";
 			$results = array();
 			if($mb_only) return(0);
 		}
 		else {
-		
-			$trm_details_list = array();
+			$use_details = false;	
 			foreach($results as $line) {
 				if(eregi('[ ]*([^:]+): \'?(.+)$',$line,$matches)) {
 					// it's late ...
@@ -49,8 +49,7 @@ class track extends track_template {
 				}
 			}
 			
-#			print_r($trm_details_list);
-			
+#			print_r($trm_details_list);	
 			foreach($trm_details_list as $trm_details_key=>$trm_details) {
 				foreach($trm_details as $key=>$value) {
 					$format_method = "format$key";
@@ -87,7 +86,7 @@ class track extends track_template {
 
 		// print_r($details);
 		if(trim($details['title']) != "") {
-			if($details['mb_verified'] == 'y' || $mb_only == "") {
+			if(isset($details['mb_verified']) && ($details['mb_verified'] == 'y' || $mb_only == "")) {
 				$this->saveDetails($details,$addslashes);
 				return(true);
 			}
@@ -109,7 +108,7 @@ class track extends track_template {
 	
 	function lookupMeta($path)
 	{
-		print "lookupMeta($path)\n";
+		print "lookupMeta()\n";
 		$details = array("album"=>'unknown','artist'=>'unknown','tracknum'=>0);
 		list($type) = array_reverse(explode(".",$path));
 		$type = strtolower($type);
@@ -135,13 +134,13 @@ class track extends track_template {
 		elseif($type == "mp3") {
 			
 			# Try ID3v2 first as mp3info also gives duration
-			exec("mp3info -p \"artist=%a\nalbum=%l\ntitle=%t\ngenre=%g\nduration=00:%m:%s\" \"$path\"",$results);
-			foreach($results as $line) {
-				if(ereg('^([^=]+)=(.+)$',$line,$matches)) {
-					$details[$matches[1]] = $matches[2];
-				}
-			}
-			unset($results);
+			#exec("mp3info -p \"artist=%a\nalbum=%l\ntitle=%t\ngenre=%g\nduration=00:%m:%s\" \"$path\"",$results);
+			#foreach($results as $line) {
+			#	if(ereg('^([^=]+)=(.+)$',$line,$matches)) {
+			#		$details[$matches[1]] = $matches[2];
+			#	}
+			#}
+			#unset($results);
 			
 			$map = array(
 			'Title/songname/content description'=>'title',
@@ -245,7 +244,7 @@ class track extends track_template {
 				$this->album_id = 0;
 			}
 
-			if($details['genre']) {
+			if(isset($details['genre'])) {
 				$genre = new genre();
 				$genre->lookupOrAdd($details['genre']);
 				$this->genre_id = $genre->id;
@@ -254,7 +253,7 @@ class track extends track_template {
 				$this->genre_id = 0;
 			}
 			
-			if(!$details['name']) {
+			if(!isset($details['name'])) {
 				$this->name = $details['title'];
 			}
 			if(!$this->name) {
@@ -268,9 +267,9 @@ class track extends track_template {
 
 			if(isset($details['duration'])) $this->duration = $details['duration'];
 			
-			$this->mb_verified = $details['mb_verified'];
+			if(isset($details['mb_verified'])) $this->mb_verified = $details['mb_verified'];
 			
-			$this->mb_track_id =  $details['musicbrainz_trackid'];
+			if(isset($details['musicbrainz_trackid'])) $this->mb_track_id =  $details['musicbrainz_trackid'];
 			
 			return(1);
 		}

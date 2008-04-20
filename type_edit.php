@@ -1,7 +1,7 @@
 <? require("header.inc"); ?>
 <h1>Update <?= $type ?></h1>
 <?
-if($_POST['process']) {
+if(isset($_POST['process'])) {
 	$details = $_POST['details'];
 	$typeObj = new $type();
 	$typeObj->get($id,"addslashes");

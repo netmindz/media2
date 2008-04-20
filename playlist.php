@@ -13,6 +13,7 @@ elseif($type != "random") {
 	$list = $track->getTypeListPlaylist($type,$id);
 }
 else {
+	$id = "";
 	$list = $track->getRandomList(20,get_remote_username());
 }
 

@@ -19,7 +19,7 @@ $source->getBestSource($track_id);
 
 if(!$source->path) {
 	mail("root","404","path=$source->path id=$track_id");
-	header("Location: http://wtatam.premierit.com/media2/splat.mp3");
+	header("Location: http://flat.netmindz.net/~will/media2/splat.mp3");
 	exit();
 }
 

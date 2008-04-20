@@ -122,15 +122,17 @@ class source extends source_template {
 			$path = $this->path;
 			$is_tmp = false;
 			if(!eregi('ogg$',$path)) {
-				print "Decoding $path\n";	
+				#print "Decoding $path\n";	
 				$path = "/tmp/" . eregi_replace('[^a-z0-9]','',basename($this->path)) . ".wav";
 				exec("mpg321 -q -w \"$path\" \"$this->path\"");
 				$is_tmp = true;
 			}
 			$sanity = 0;
+			$results = array("");
 			while((($results[0] == "")||(eregi("too busy",$results[0])))&&($sanity < 10)) { 
 				unset($results);
-				print "getTRM($this->path)";
+				#print "getTRM($this->path)";
+				print "getTRM()";
 				exec("trm \"$path\" 2>&1",$results,$return);
 				if(($return == 0)&&(ereg('^[0-9a-z_-]+$',trim($results[0])))) {
 					$trm = $results[0];
