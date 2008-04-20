@@ -3,7 +3,7 @@
 $properties = array("tracknum","name","artist_id","album_id","genre_id","year");
 settype($id,"int");
 
-if($_POST['process']) {
+if(isset($_POST['process'])) {
 	$details = $_POST['details'];
 	$track = new track();
 	$track->get($id,"addslashes");
@@ -41,7 +41,7 @@ else {
 		<th><?= $track->createFormLabel($prop_name,"details[]") ?></th>
 		<td>
 			<?= 	$track->createFormObject($prop_name,"details[]"); ?>
-			<? if($track->_field_descs[$prop_name]['fk']) {  ?><br>new <input type="text" name="new[<?= $prop_name ?>]" size="30"><? } ?>
+			<? if(isset($track->_field_descs[$prop_name]['fk'])) {  ?><br>new <input type="text" name="new[<?= $prop_name ?>]" size="30"><? } ?>
 		</td>
 	</tr>
 	<? if($prop_name == "artist") exit("eak"); ?>
