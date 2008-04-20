@@ -29,7 +29,7 @@ class audioscrobbler
 		and as_accounts.username = '$this->user' and tracks.name != '' and artists.name != '' and albums.name != ''
 		order by played limit 0,5";*/
 		$result = mysql_query($sql);
-		print "sql = $sql\n";
+		#print "sql = $sql\n";
 		print mysql_error();
 		if(mysql_num_rows($result) > 0) {
 			if($this->_handshake()) {
@@ -59,9 +59,11 @@ class audioscrobbler
 
 				print_r($post);
 				if($i) {	
-					if($result = fake_post	($this->url,$post)) {
+					if($result = fake_post($this->url,$post)) {
+						print_r($result);
 						$lines = explode("\n",$result);
-						if($lines[1]) sleep($lines[1]);
+						list($null,$sleep) = explode(" ",$lines[1]);
+						if($sleep) sleep($sleep);
 						if($lines[0] == "OK") {
 							print "$i results uploaded\n";
 							mysql_query("delete from as_spool_items where id in (" . implode(",",$as_list) . ")");
@@ -86,6 +88,7 @@ class audioscrobbler
 		}
 		else {
 			$this->lastError = "no items in queue for $this->u";
+			return(1);
 		}
 	}
 	
@@ -182,6 +185,7 @@ class audioscrobbler
 
 function fake_post($url, $params=array())
 {
+		$post = "";
 		foreach($params as $key => $value) {
 			if($post) $post .= '&'; 
 //			$post .= $key .'=' . htmlentities($value);
