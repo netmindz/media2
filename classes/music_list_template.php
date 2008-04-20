@@ -94,11 +94,11 @@ class music_list_template
 		$this->_field_descs['TRACK_volume_diff'] = array ("type" => "float unsigned", "gen_type" => "number");
 		$this->_field_descs['TRACK_year'] = array ("type" => "int(4)", "length" => "4", "gen_type" => "int");
 		$this->_field_descs['TRACK_last_lookup'] = array ("type" => "date", "gen_type" => "datetime");
-		$this->_field_descs['TRACK_mb_verified'] = array ("type" => "enum('n','y')", "default" => "n", "values" => array('n','y',), "gen_type" => "enum");
+		$this->_field_descs['TRACK_mb_verified'] = array ("type" => "enum('n','y')", "default" => "", "values" => array('n','y',), "gen_type" => "enum");
 		$this->_field_descs['TRACK_mb_track_id'] = array ("type" => "varchar(150)", "length" => "150", "gen_type" => "string");
-		$this->_field_descs['TRACK__update_id3'] = array ("type" => "enum('n','y')", "default" => "n", "values" => array('n','y',), "gen_type" => "enum");
+		$this->_field_descs['TRACK__update_id3'] = array ("type" => "enum('n','y')", "default" => "", "values" => array('n','y',), "gen_type" => "enum");
 		$this->_field_descs['TRACK_added'] = array ("type" => "datetime", "gen_type" => "datetime");
-		$this->_field_descs['TRACK__archived'] = array ("type" => "enum('n','y')", "default" => "n", "values" => array('n','y',), "gen_type" => "enum");
+		$this->_field_descs['TRACK__archived'] = array ("type" => "enum('n','y')", "default" => "", "values" => array('n','y',), "gen_type" => "enum");
 		$this->_field_descs['ARTIST_id'] = array ("pk" => "1", "type" => "int(10) unsigned", "length" => "10", "gen_type" => "int");
 		$this->_field_descs['ARTIST_mb_id'] = array ("type" => "varchar(125)", "length" => "125", "gen_type" => "string");
 		$this->_field_descs['ARTIST_name'] = array ("type" => "varchar(255)", "length" => "255", "gen_type" => "string");
@@ -127,7 +127,7 @@ class music_list_template
 	function getList($where="",$order="",$limit="", $joins="")
 	{
 		if(!$order)
-			$order = "order by ALBUM_name,TRACK_tracknum,ARTIST_name,TRACK_name" ;
+			$order = "order by ALBUM_name,ALBUM_cd_number,TRACK_tracknum,ARTIST_name,TRACK_name" ;
 		
 		if ($joins && !is_array($joins))
 			trigger_error('Non-array submitted for \$joins paramter of '.$this.'->getList', E_USER_WARNING);
@@ -298,7 +298,7 @@ class music_list_template
 			
 			foreach ($properties as $key => $value) {
 				if($this->_field_descs[$key]['gen_type'] == "many2many") {
-					$child_class = $this->_field_descs[$key][fk];
+					$child_class = $this->_field_descs[$key]['fk'];
 					
 					if(!class_exists($child_class)) {
 						# Todo - Write so this can be done without @
@@ -307,7 +307,9 @@ class music_list_template
 					}
 	
 					$child = new $child_class();
-					$child->_setPropertiesLinkages("music_list", $this->TRACK_id, array_keys($value));
+					
+                        $child->_setPropertiesLinkages("music_list", $this->TRACK_id, array_keys($value));
+                        
 				}
 				else {
 					if(array_key_exists($key, $object_props)){
@@ -319,10 +321,16 @@ class music_list_template
 								trigger_error("::setProperties can't set $key to be an array",E_USER_WARNING);
 							}
 						}
-						if ($addSlashes)
+						// provided by PHPOF
+						if(class_exists("XString")) {
+		                                        $value = XString::FilterMS_ASCII($value);
+                               			}
+						if (($addSlashes)&&($this->_field_descs[$key]['type'] != "blob")) {
 							$this->$key = addslashes($value);
-						else
+						}
+						else {
 							$this->$key = $value;
+						}
 					}//IF key matched
 				}
 			}//FOREACH element
@@ -528,7 +536,9 @@ class music_list_template
 				}
 				$fk_class = new $fk_class();
 				if($this->_field_descs[$property]['gen_type'] == "many2many") {
-					$html .= $fk_class->createMatrix($input_name,"music_list",$this->TRACK_id);
+				
+						$html .= $fk_class->createMatrix($input_name,"music_list",$this->TRACK_id);
+						
 				}
 				else {
 					ob_start();

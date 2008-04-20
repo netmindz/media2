@@ -384,7 +384,7 @@ class host_template
 			
 			foreach ($properties as $key => $value) {
 				if($this->_field_descs[$key]['gen_type'] == "many2many") {
-					$child_class = $this->_field_descs[$key][fk];
+					$child_class = $this->_field_descs[$key]['fk'];
 					
 					if(!class_exists($child_class)) {
 						# Todo - Write so this can be done without @
@@ -393,7 +393,9 @@ class host_template
 					}
 	
 					$child = new $child_class();
-					$child->_setPropertiesLinkages("host", $this->id, array_keys($value));
+					
+                        $child->_setPropertiesLinkages("host", $this->id, array_keys($value));
+                        
 				}
 				else {
 					if(array_key_exists($key, $object_props)){
@@ -405,10 +407,16 @@ class host_template
 								trigger_error("::setProperties can't set $key to be an array",E_USER_WARNING);
 							}
 						}
-						if ($addSlashes)
+						// provided by PHPOF
+						if(class_exists("XString")) {
+		                                        $value = XString::FilterMS_ASCII($value);
+                               			}
+						if (($addSlashes)&&($this->_field_descs[$key]['type'] != "blob")) {
 							$this->$key = addslashes($value);
-						else
+						}
+						else {
 							$this->$key = $value;
+						}
 					}//IF key matched
 				}
 			}//FOREACH element
@@ -614,7 +622,9 @@ class host_template
 				}
 				$fk_class = new $fk_class();
 				if($this->_field_descs[$property]['gen_type'] == "many2many") {
-					$html .= $fk_class->createMatrix($input_name,"host",$this->id);
+				
+						$html .= $fk_class->createMatrix($input_name,"host",$this->id);
+						
 				}
 				else {
 					ob_start();
