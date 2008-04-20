@@ -64,5 +64,5 @@ function get_http_mount_point()
 
 $track_type_list = array("artist","album","genre");
 
-$CONF['rpms'] = array("trm","libtunepimp","gjay","php-pear-XML-Serializer","libtunepimp-tools");
+$CONF['rpms'] = array("trm","libmusicbrainz-cli","libtunepimp","gjay","php-pear-XML-Serializer","libtunepimp-tools");
 ?>
