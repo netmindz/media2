@@ -6,7 +6,7 @@ foreach($CONF['rpms'] as $rpm) {
 	exec("rpm -q $rpm",$result,$error);
 	if($error) {
 		print "ERROR: $rpm is required\n";
-	#	exit(1);
+		exit(1);
 	}
 }
 
