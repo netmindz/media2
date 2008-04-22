@@ -1,4 +1,7 @@
 <? require("header.inc"); ?>
+<?
+$type = $_REQUEST['type']; 
+?>
 <h1>Update <?= $type ?></h1>
 <?
 if(isset($_POST['process'])) {

@@ -1,6 +1,10 @@
 <?
 require("header.php");
 
+$id = $_REQUEST['id'];
+$type = $_REQUEST['type'];
+$mod = $_REQUEST['mod'];
+
 $type_pref = new type_pref($type,$id);
 
 if($mod == "love") {

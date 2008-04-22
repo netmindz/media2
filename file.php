@@ -1,6 +1,8 @@
 <? 
 require("header.php"); 
 
+$id = $_GET['id'];
+
 $track = new music_list();
 $track->get($id);
 
