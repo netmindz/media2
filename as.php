@@ -1,7 +1,7 @@
 	<?
 require_once("header.php");
 
-if(basename($PHP_SELF) == "as.php") {
+if(basename($_SERVER['PHP_SELF']) == "as.php") {
 	?>
 	<html>
 	<head>
