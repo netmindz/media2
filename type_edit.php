@@ -12,7 +12,7 @@ if(isset($_POST['process'])) {
 	$typeObj= set_properties($typeObj,$details);
 	$typeObj->update();
 	
-	foreach($batch as $property=>$value) {
+	foreach($_POST['batch'] as $property=>$value) {
 		$tracks = new track();
 		if($value) {
 			$count = $tracks->batchUpdate($property,$value,"${type}_id=$id");
