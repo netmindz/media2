@@ -1,5 +1,5 @@
 <?
-require("cached_trm.php");
+require("cached_trm.class.php");
 
 
 require("source_template.php");

@@ -2,16 +2,16 @@
 require("/home/www/codebase/premier_common.php");
 require("site_config.inc.php");
 require("/home/www/codebase/database.php");
-require("artist.php");
-require("album.php");
-require("genre.php");
-require("track.php");
-require("source.php");
-require("dead_source.php");
-require("track_pref.php");
-require("type_pref.php");
-require("host.php");
-require("music_list.php");
+require("artist.class.php");
+require("album.class.php");
+require("genre.class.php");
+require("track.class.php");
+require("source.class.php");
+require("dead_source.class.php");
+require("track_pref.class.php");
+require("type_pref.class.php");
+require("host.class.php");
+require("music_list.class.php");
 require("audioscrobbler.php");
 
 function exp_rand($min, $max)
@@ -49,7 +49,7 @@ function get_remote_username()
 		list($username) = explode(".",$hostname);
 	}
 	return($username);
-}
+
 */
 function get_http_mount_point()
 {

@@ -1,7 +1,7 @@
 <?
 require("track_pref_template.php");
-require_once("as_account.php");
-require_once("as_spool_item.php");
+require_once("as_account.class.php");
+require_once("as_spool_item.class.php");
 
 class track_pref extends track_pref_template {
 

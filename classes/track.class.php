@@ -1,7 +1,7 @@
 <?
-require_once("artist.php");
-require_once("album.php");
-require_once("genre.php");
+require_once("artist.class.php");
+require_once("album.class.php");
+require_once("genre.class.php");
 
 require("track_template.php");
 

@@ -96,10 +96,9 @@ class track_template
 	
 	/**
 	 * @return bool - false on fail, new ID on success, or true if no auto-inc primary key
-	 * @param int $addslashes		-	If True, addslashes to all fields before adding record
 	 * @desc This generic method enters all the current values of the properties into the database as a new record
 	 */
-	function add($addslashes=0) {
+	function add() {
 		
 		if($this->id != (int)$this->id && $this->id!='NOW()' && $this->id!='NULL'){
 			trigger_error("wrong type for track->id",E_USER_WARNING);
@@ -155,11 +154,7 @@ class track_template
 		
 		$raw_sql  = "INSERT INTO tracks (`trm`, `tracknum`, `name`, `artist_id`, `album_id`, `genre_id`, `duration`, `bpm`, `volume_diff`, `year`, `last_lookup`, `mb_verified`, `mb_track_id`, `_update_id3`, `added`, `_archived`)";
 		
-		if ($addslashes) {
-				$raw_sql.= " VALUES ('".addslashes($this->trm)."', '".addslashes($this->tracknum)."', '".addslashes($this->name)."', '".addslashes($this->artist_id)."', '".addslashes($this->album_id)."', '".addslashes($this->genre_id)."', '".addslashes($this->duration)."', '".addslashes($this->bpm)."', '".addslashes($this->volume_diff)."', '".addslashes($this->year)."', '".addslashes($this->last_lookup)."', '".addslashes($this->mb_verified)."', '".addslashes($this->mb_track_id)."', '".addslashes($this->_update_id3)."', '".addslashes($this->added)."', '".addslashes($this->_archived)."')";
-		}else{
-			$raw_sql.= " VALUES ('$this->trm', '$this->tracknum', '$this->name', '$this->artist_id', '$this->album_id', '$this->genre_id', '$this->duration', '$this->bpm', '$this->volume_diff', '$this->year', '$this->last_lookup', '$this->mb_verified', '$this->mb_track_id', '$this->_update_id3', '$this->added', '$this->_archived')";
-		}//IF slashes
+		$raw_sql.= " VALUES ('".$this->database->escape($this->trm)."', '".$this->database->escape($this->tracknum)."', '".$this->database->escape($this->name)."', '".$this->database->escape($this->artist_id)."', '".$this->database->escape($this->album_id)."', '".$this->database->escape($this->genre_id)."', '".$this->database->escape($this->duration)."', '".$this->database->escape($this->bpm)."', '".$this->database->escape($this->volume_diff)."', '".$this->database->escape($this->year)."', '".$this->database->escape($this->last_lookup)."', '".$this->database->escape($this->mb_verified)."', '".$this->database->escape($this->mb_track_id)."', '".$this->database->escape($this->_update_id3)."', '".$this->database->escape($this->added)."', '".$this->database->escape($this->_archived)."')";
 		
 		$raw_sql = str_replace("'NOW()'", "NOW()", $raw_sql);		//remove quotes
 		$sql = str_replace("'NULL'", "NULL", $raw_sql);			//remove quotes
@@ -179,10 +174,9 @@ class track_template
 	
 	/**
 	 * @return unknown
-	 * @param int $addslashes		-	If True, addslashes to all fields before updating
 	 * @desc This generic method updates the database to reflect the current values of the objects properties
 	 */
-	function update($addslashes=0)
+	function update()
 	{
 	
 		if($this->id != (int)$this->id && $this->id!='NOW()' && $this->id!='NULL'){
@@ -237,12 +231,7 @@ class track_template
 		}//IF
 
 		$raw_sql  = "UPDATE tracks SET ";
-		if($addslashes) {
-			$raw_sql.= "`trm`='".addslashes($this->trm)."', `tracknum`='".addslashes($this->tracknum)."', `name`='".addslashes($this->name)."', `artist_id`='".addslashes($this->artist_id)."', `album_id`='".addslashes($this->album_id)."', `genre_id`='".addslashes($this->genre_id)."', `duration`='".addslashes($this->duration)."', `bpm`='".addslashes($this->bpm)."', `volume_diff`='".addslashes($this->volume_diff)."', `year`='".addslashes($this->year)."', `last_lookup`='".addslashes($this->last_lookup)."', `mb_verified`='".addslashes($this->mb_verified)."', `mb_track_id`='".addslashes($this->mb_track_id)."', `_update_id3`='".addslashes($this->_update_id3)."', `added`='".addslashes($this->added)."', `_archived`='".addslashes($this->_archived)."'";
-		}else{
-			$raw_sql.= "`trm`='$this->trm', `tracknum`='$this->tracknum', `name`='$this->name', `artist_id`='$this->artist_id', `album_id`='$this->album_id', `genre_id`='$this->genre_id', `duration`='$this->duration', `bpm`='$this->bpm', `volume_diff`='$this->volume_diff', `year`='$this->year', `last_lookup`='$this->last_lookup', `mb_verified`='$this->mb_verified', `mb_track_id`='$this->mb_track_id', `_update_id3`='$this->_update_id3', `added`='$this->added', `_archived`='$this->_archived'";
-		}//IF
-		
+		$raw_sql.= "`trm`='".$this->database->escape($this->trm)."', `tracknum`='".$this->database->escape($this->tracknum)."', `name`='".$this->database->escape($this->name)."', `artist_id`='".$this->database->escape($this->artist_id)."', `album_id`='".$this->database->escape($this->album_id)."', `genre_id`='".$this->database->escape($this->genre_id)."', `duration`='".$this->database->escape($this->duration)."', `bpm`='".$this->database->escape($this->bpm)."', `volume_diff`='".$this->database->escape($this->volume_diff)."', `year`='".$this->database->escape($this->year)."', `last_lookup`='".$this->database->escape($this->last_lookup)."', `mb_verified`='".$this->database->escape($this->mb_verified)."', `mb_track_id`='".$this->database->escape($this->mb_track_id)."', `_update_id3`='".$this->database->escape($this->_update_id3)."', `added`='".$this->database->escape($this->added)."', `_archived`='".$this->database->escape($this->_archived)."'";
 		$raw_sql.= " WHERE 1
 
 		AND id = '$this->id' ";
@@ -265,18 +254,15 @@ class track_template
 	/**
 	* @return bool
 	* @param string $fieldname		-	The exact name of the field in the table / object property
-	* @param int $addslashes		-	If True, addslashes to the field before updating
 	* @desc Sets individual fields in the record, allowing special cases to be executed (eg. sess_expires), and leaving others unchanged.
  	*/
-	function set($fieldname, $addslashes=0) {
+	function set($fieldname) {
 		
 		//define the SQL to use to UPDATE the field...
 		if ($this->_field_descs[$fieldname]['gen_type'] == 'int' || $this->$fieldname == "NULL" || $this->$fieldname == "NOW()")
 			$sql = "UPDATE tracks SET $fieldname = ".$this->$fieldname;
-		elseif ($addslashes)
-			$sql = "UPDATE tracks SET $fieldname = '".addslashes($this->$fieldname)."'";
 		else
-			$sql = "UPDATE tracks SET $fieldname = '".$this->$fieldname."'";
+			$sql = "UPDATE tracks SET $fieldname = '".$this->database->escape($this->$fieldname)."'";
 		
 		
 		//Now add the WHERE clause
@@ -296,13 +282,12 @@ class track_template
 	* @return bool
 	* @param string $fieldname		-	The exact name of the field in the table / object property
 	* @param string $value		-	The value of the field in the table / object property
-	* @param int $addslashes		-	If True, addslashes to the field before updating
 	* @desc Wrapper that calls setProperties for the supplied pair and calls set()
  	*/
-	function setField($field,$value,$addslashes=0)
+	function setField($field,$value)
 	{
 		$this->setProperties(array($field=>$value));
-		return($this->set($field,$addslasses));
+		return($this->set($field));
 	}
 	
 	
@@ -337,7 +322,7 @@ class track_template
 	 */
 	function getList($where="", $order="", $limit="")
 	{
-		if(!$order) $order = "order by tracknum" ;
+		if(!$order) $order = "order by tracknum";
 		$select = "SELECT tracks.* FROM tracks ";
 		if ($this->database->query("$select $where $order $limit")) {
 			return($this->database->RowCount);
@@ -352,7 +337,7 @@ class track_template
 	 * @return unknown
 	 * @desc This generic method gets the next result from the last database query and loads the values into the properties of the object
 	 */
-	function getNext($addslashes = "")
+	function getNext()
 	{
 		$tmp = $this->database->getNextRow();
 		
@@ -364,14 +349,7 @@ class track_template
 			// TODO - rewrite this bit to work with meta tables, e.g
 			// class::get{field}CB
 			
-			//hack to allow people calling addslashes to call it without affecting (my) overriden methods that dont support it - oops! rs 10/04
-			if ($addslashes)
-				$this->setProperties($tmp, $addslashes);
-			else
-				$this->setProperties($tmp);
-			
-//			$this = set_properties($this, $tmp, $addslashes,"get");
-			$this->_data_format='db';
+			$this->setProperties($tmp);
 			
 			//convert from DB properties
 			$this->convertDBProperties('from');		//needs to be changed to 'php' when legacy stuff is removed
@@ -397,12 +375,10 @@ class track_template
 	 * @return unknown
 	 * @param int $id		-	primary key of record
 
-	 * @param unknown $addslashes = ""
 	 * @desc Extracts the requested record from the database and puts it into the properties of the object
 	 */
-	function get($id, $addslashes = "")
+	function get($id)
 	{ 
-		//settype($,"int");
 		
 		$sql = "WHERE 1
 		AND id = '$id'";
@@ -416,7 +392,7 @@ class track_template
 			return false;
 			
 		}else{
-			if ($this->getNext($addslashes))
+			if ($this->getNext())
 				return true;
 			else
 				return false;
@@ -445,7 +421,7 @@ class track_template
 				$sql.= " AND $fieldname = '$value' ";*/
 			//^cant trust that supplied data is numeric for INT fields, so....
 			
-			$sql.= " AND $fieldname = '".addslashes($value)."'";
+			$sql.= " AND $fieldname = '".$this->database->escape($value)."'";
 		}//FOREACH
 		
 		//retrieve all fields from the table and map to user object
@@ -485,7 +461,7 @@ class track_template
 			$object_props = get_object_vars($this);		//retrieve array of properties
 			
 			foreach ($properties as $key => $value) {
-				if($this->_field_descs[$key]['gen_type'] == "many2many") {
+				if(isset($this->_field_descs[$key]['fk'])) {
 					$child_class = $this->_field_descs[$key]['fk'];
 					
 					if(!class_exists($child_class)) {
@@ -493,11 +469,24 @@ class track_template
 						@include "$child_class.php";		//attempt to load class file, but suppress errors if not found
 						@include "$child_class.class.php";		//attempt to load class file, but suppress errors if not found
 					}
-	
 					$child = new $child_class();
+					if($this->_field_descs[$key]['gen_type'] == "many2many") {
 					
-                        $child->_setPropertiesLinkages("track", $this->id, array_keys($value));
+	                        $child->_setPropertiesLinkages("track", $this->id, array_keys($value));
                         
+					}
+					else {
+						if((isset($_FILES[$key]))&&($_FILES[$key]["size"])) {
+							if($value) {
+								$child->delete($value);
+							}
+							$this->$key = $child->upload($_FILES[$key]["tmp_name"],$_FILES[$key]["name"]);
+						}
+						else {
+							// use old value
+							$this->$key = $value;
+						}
+					}
 				}
 				else {
 					if(array_key_exists($key, $object_props)){
@@ -510,15 +499,10 @@ class track_template
 							}
 						}
 						// provided by PHPOF
-						if(class_exists("XString")) {
+						if(($this->_field_descs[$key]['gen_type'] == "string")&&(class_exists("XString"))) {
 		                                        $value = XString::FilterMS_ASCII($value);
                                			}
-						if (($addSlashes)&&($this->_field_descs[$key]['type'] != "blob")) {
-							$this->$key = addslashes($value);
-						}
-						else {
-							$this->$key = $value;
-						}
+						$this->$key = $value;
 					}//IF key matched
 				}
 			}//FOREACH element
@@ -722,11 +706,19 @@ class track_template
 					@include "$fk_class.php";		//attempt to load class file, but suppress errors if not found
 					@include "$fk_class.class.php";		//attempt to load class file, but suppress errors if not found
 				}
-				$fk_class = new $fk_class();
+				$fk = new $fk_class();
 				if($this->_field_descs[$property]['gen_type'] == "many2many") {
 				
-						$html .= $fk_class->createMatrix($input_name,"track",$this->id);
+						$html .= $fk->createMatrix($input_name,"track",$this->id);
 						
+				}
+				elseif($fk_class == "image") {
+					$fk->get($value);
+                                        if($fk->id) {
+                                        	print "$fk->name ";
+                                       	}
+                                        $html .= "<input type=\"hidden\" name=\"" . $input_name  ."\" value=\"$value\"><br>\n";
+                                   	$html .= "<input type=\"file\" name=\"".$property."\">";
 				}
 				else {
 					ob_start();
@@ -740,6 +732,9 @@ class track_template
 			
 		} else {	//not a Foreign Key field...
 			switch ($this->_field_descs[$property]['gen_type']) {
+                          case 'blob' :
+					$html .= 'Binary Data';
+					break;
 			  case 'int' :
 			  case 'number' :
 				preg_match ("/\((\d+)\)/", $this->_field_descs[$property]['type'], $matches);		//get field length

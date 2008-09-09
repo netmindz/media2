@@ -158,7 +158,7 @@ class music_list_template
 	 * @return unknown
 	 * @desc This generic method gets the next result from the last database query and loads the values into the properties of the object
 	 */
-	function getNext($addslashes = "")
+	function getNext()
 	{
 		$tmp = $this->database->getNextRow();
 		
@@ -170,14 +170,7 @@ class music_list_template
 			// TODO - rewrite this bit to work with meta tables, e.g
 			// class::get{field}CB
 			
-			//hack to allow people calling addslashes to call it without affecting (my) overriden methods that dont support it - oops! rs 10/04
-			if ($addslashes)
-				$this->setProperties($tmp, $addslashes);
-			else
-				$this->setProperties($tmp);
-			
-//			$this = set_properties($this, $tmp, $addslashes,"get");
-			$this->_data_format='db';
+			$this->setProperties($tmp);
 			
 			//convert from DB properties
 			$this->convertDBProperties('from');		//needs to be changed to 'php' when legacy stuff is removed
@@ -206,12 +199,10 @@ class music_list_template
 	 * @param int $ALBUM_id		-	primary key of record
 	 * @param int $GENRE_id		-	primary key of record
 
-	 * @param unknown $addslashes = ""
 	 * @desc Extracts the requested record from the database and puts it into the properties of the object
 	 */
-	function get($TRACK_id, $ARTIST_id, $ALBUM_id, $GENRE_id, $addslashes = "")
+	function get($TRACK_id, $ARTIST_id, $ALBUM_id, $GENRE_id)
 	{ 
-		//settype($,"int");
 		
 		$sql = "WHERE 1
 		AND track.id = '$TRACK_id'
@@ -228,7 +219,7 @@ class music_list_template
 			return false;
 			
 		}else{
-			if ($this->getNext($addslashes))
+			if ($this->getNext())
 				return true;
 			else
 				return false;
@@ -257,7 +248,7 @@ class music_list_template
 				$sql.= " AND $fieldname = '$value' ";*/
 			//^cant trust that supplied data is numeric for INT fields, so....
 			
-			$sql.= " AND $fieldname = '".addslashes($value)."'";
+			$sql.= " AND $fieldname = '".$this->database->escape($value)."'";
 		}//FOREACH
 		
 		//retrieve all fields from the table and map to user object
@@ -297,7 +288,7 @@ class music_list_template
 			$object_props = get_object_vars($this);		//retrieve array of properties
 			
 			foreach ($properties as $key => $value) {
-				if($this->_field_descs[$key]['gen_type'] == "many2many") {
+				if(isset($this->_field_descs[$key]['fk'])) {
 					$child_class = $this->_field_descs[$key]['fk'];
 					
 					if(!class_exists($child_class)) {
@@ -305,11 +296,24 @@ class music_list_template
 						@include "$child_class.php";		//attempt to load class file, but suppress errors if not found
 						@include "$child_class.class.php";		//attempt to load class file, but suppress errors if not found
 					}
-	
 					$child = new $child_class();
+					if($this->_field_descs[$key]['gen_type'] == "many2many") {
 					
-                        $child->_setPropertiesLinkages("music_list", $this->TRACK_id, array_keys($value));
+	                        $child->_setPropertiesLinkages("music_list", $this->TRACK_id, array_keys($value));
                         
+					}
+					else {
+						if((isset($_FILES[$key]))&&($_FILES[$key]["size"])) {
+							if($value) {
+								$child->delete($value);
+							}
+							$this->$key = $child->upload($_FILES[$key]["tmp_name"],$_FILES[$key]["name"]);
+						}
+						else {
+							// use old value
+							$this->$key = $value;
+						}
+					}
 				}
 				else {
 					if(array_key_exists($key, $object_props)){
@@ -322,15 +326,10 @@ class music_list_template
 							}
 						}
 						// provided by PHPOF
-						if(class_exists("XString")) {
+						if(($this->_field_descs[$key]['gen_type'] == "string")&&(class_exists("XString"))) {
 		                                        $value = XString::FilterMS_ASCII($value);
                                			}
-						if (($addSlashes)&&($this->_field_descs[$key]['type'] != "blob")) {
-							$this->$key = addslashes($value);
-						}
-						else {
-							$this->$key = $value;
-						}
+						$this->$key = $value;
 					}//IF key matched
 				}
 			}//FOREACH element
@@ -534,11 +533,19 @@ class music_list_template
 					@include "$fk_class.php";		//attempt to load class file, but suppress errors if not found
 					@include "$fk_class.class.php";		//attempt to load class file, but suppress errors if not found
 				}
-				$fk_class = new $fk_class();
+				$fk = new $fk_class();
 				if($this->_field_descs[$property]['gen_type'] == "many2many") {
 				
-						$html .= $fk_class->createMatrix($input_name,"music_list",$this->TRACK_id);
+						$html .= $fk->createMatrix($input_name,"music_list",$this->TRACK_id);
 						
+				}
+				elseif($fk_class == "image") {
+					$fk->get($value);
+                                        if($fk->id) {
+                                        	print "$fk->name ";
+                                       	}
+                                        $html .= "<input type=\"hidden\" name=\"" . $input_name  ."\" value=\"$value\"><br>\n";
+                                   	$html .= "<input type=\"file\" name=\"".$property."\">";
 				}
 				else {
 					ob_start();
@@ -552,6 +559,9 @@ class music_list_template
 			
 		} else {	//not a Foreign Key field...
 			switch ($this->_field_descs[$property]['gen_type']) {
+                          case 'blob' :
+					$html .= 'Binary Data';
+					break;
 			  case 'int' :
 			  case 'number' :
 				preg_match ("/\((\d+)\)/", $this->_field_descs[$property]['type'], $matches);		//get field length
