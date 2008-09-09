@@ -49,12 +49,12 @@ class music_list extends music_list_template {
 			$artist = new artist();
 			$artist->get($id);
 			$as = new audioscrobbler();
-			$sql = "";
+			$artists = array($id);
 			$s_artists = $as->getSimilarArtist($artist->name,10);
 			foreach($s_artists as $s_artist) {
-				$sql .= "artist_id=$s_artist->id OR ";
+				$artists[] = $s_artist->id;
 			}
-			$this->getList("where $sql artist_id=$id","order by rand()","limit 0,$limit");
+			$this->getList("where artist_id in (".implode(",",$artists).") and _archived != 'y'","order by rand()","limit 0,$limit");
 			while($this->getNext()) {
 				$row = array();
 				$row['id'] = $this->TRACK_id;

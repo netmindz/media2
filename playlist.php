@@ -30,6 +30,9 @@ foreach($list as $details) {
 		# bug in xmms, been reported as 1723
 		$pls[] = "#EXTINF:" . time_to_secs($details['duration']) . ",$details[artist] - $details[name]\r\nhttp://" . get_http_mount_point() ."/" . $details['id'] . "." . $source->type;
 	}
+	else {
+		$pls[] = "# failed to find source for " . $details['id'];
+	}
 }
 
 if(count($pls)) {
