@@ -374,7 +374,7 @@ class cached_trm_template
 					if(array_key_exists($key, $object_props)){
 						if(is_array($value)) {
 							if(isset($value['month']) && isset($value['year']) ) {
-								//$value = mysqlDateJoin($value); breaking CPD activities
+								$value = $this->mysqlDateJoin($value);
 							}
 							else {
 								trigger_error("::setProperties can't set $key to be an array",E_USER_WARNING);
@@ -396,7 +396,30 @@ class cached_trm_template
 		}//IF is array
 		
 	}//setProperties
-	
+
+	///////////////////////////////////////////////////////////////////
+	//      rob s - 04/12/03
+	/**
+	 * @return array        -       An array of seperate date/time fields
+	 * @param $mysql_date           - Accepts an array of type defined by mysqlDateSplit function
+	 * @param $timestamp            - If set, a MySQL timestamp is created, rather than a MySQL DATETIME
+	 * @desc This function takes a Date array created by mysqlDateSplit and joins it into a MySQL DATEIME or TIMESTAMP field
+	 */
+	function mysqlDateJoin ($mysql_date, $timestamp=0) {
+	        if (!$timestamp) {      //therefore is DATETIME
+	                $date_string = $mysql_date['year']."-".$mysql_date['month']."-".$mysql_date['day'];
+	                if (isset($mysql_date['hour']))
+	                        $date_string.= " ".$mysql_date['hour'].":".$mysql_date['min'].":".$mysql_date['sec'];
+
+        	}else{  //is TIMESTAMP
+	                return $mysql_date['year'].$mysql_date['month'].$mysql_date['day'].$mysql_date['hour'].$mysql_date['min'].$mysql_date['sec'];
+	                $date_string = $mysql_date['year'].$mysql_date['month'].$mysql_date['day'];
+	                if (isset($mysql_date['hour']))
+	                        $date_string.= $mysql_date['hour'].$mysql_date['min'].$mysql_date['sec'];
+	        }//IF DATETIME
+
+	        return $date_string;
+	}//mysqlDateJoin
 	
 	
 	
@@ -603,9 +626,10 @@ class cached_trm_template
                                    	$html .= "<input type=\"file\" name=\"".$property."\">";
 				}
 				else {
+					$fk_obj = new $fk_class();
 					ob_start();
 					$extra .= " id=\"$html_id\" ";
-					$fk_class->createSelect($input_name, $property_value, $where, $extra);
+					$fk_obj->createSelect($input_name, $property_value, $where, $extra);
 					$html.= ob_get_contents();
 					ob_end_clean();
 				}
@@ -616,6 +640,9 @@ class cached_trm_template
 			switch ($this->_field_descs[$property]['gen_type']) {
                           case 'blob' :
 					$html .= 'Binary Data';
+					break;
+                          case 'timestamp' :
+					$html .= $this->$property;
 					break;
 			  case 'int' :
 			  case 'number' :
