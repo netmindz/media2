@@ -165,10 +165,16 @@ class audioscrobbler
 			$artist_prefix = "";
 		}
 		if(isset($data[$type])) {
-			foreach($data[$type] as $details) {
+			if(isset($data[$type]['name'])) {
+				$data = array($data[$type]); // hack as might be single item or list
+			}
+			else {
+				$data = $data[$type];
+			}
+			foreach($data as $details) {
 				if($item->getList("where name='" . addslashes($details['name']) . "' and ${artist_prefix}artist_id=$artist->id")) {
 					while($item->getNext()) {
-						$items[] = clone($item);
+						$items[$details['name']] = clone($item);
 						// as we may have more than one copy of this track ...
 						$names_found[$details['name']] = true;
 					}
