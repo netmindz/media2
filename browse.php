@@ -95,6 +95,10 @@ else {
 	<?
 	$artists = array();
 	if($type == "album") {
+		if($typeObj->amazon_asin) {
+			print "<img src=\"http://images.amazon.com/images/P/".$typeObj->amazon_asin.".01._SCMZZZZZZZ_.jpg\">";
+		}
+/*
 		$amazon_details = amazon_getAlbum($artists,$typeObj->name,$typeObj->amazon_asin);
 		$album_image = "";
 		if((count($amazon_details) > 0)&&($amazon_details != '')) {
@@ -114,6 +118,7 @@ else {
 			if($album_image) print "<img src=\"" . $album_image . "\" border=\"0\"></a><br>";
 			print htmlspecialchars(utf8_decode($amazon_details->OurPrice)) . "</p>\n";
 		}
+*/
 	}
 	elseif($type == "artist") {
 		
@@ -185,7 +190,7 @@ else {
 	}
 	
 	track_footer();
-	if((!isset($amazon_details))&&($type == "album")) amazon_getAlbum($artists,$typeObj->name,$typeObj->amazon_asin);
+	if(($type == "album")&&(!$typeObj->amazon_asin)) amazon_getAlbum($artists,$typeObj->name,$typeObj->amazon_asin);
 }
 
 

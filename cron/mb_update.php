@@ -9,6 +9,7 @@ function mb_find($type,$name)
 	$name = strtolower($name);
 	exec("find$type \"$name\"",$results);
 #	print_r($results);
+	$list = array();
 	foreach($results as $line) {
 		if(eregi("$type: '(.+)'",$line,$matches)) {
 			$last_item = strtolower($matches[1]);
@@ -21,7 +22,7 @@ function mb_find($type,$name)
 		}
 	}
 #	print_r($list);
-	return($list[$name]);
+	if(isset($list[$name])) return($list[$name]);
 }
 
 // albums can be by a specific artist

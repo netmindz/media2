@@ -121,6 +121,7 @@ class audioscrobbler
 		$artist = new artist();
 		$artists = array();
 		$list = @file("http://ws.audioscrobbler.com/1.0/artist/" . urlencode($artist_name) . "/similar.txt");
+		if(!$list) return($artists);
 		foreach($list as $item) {
 			$details = explode(",",trim($item));
 			if(($details[1]) && ($artist->getByOther(array("mb_id"=>$details[1])))) {
