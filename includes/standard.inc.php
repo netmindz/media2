@@ -66,5 +66,5 @@ $track_type_list = array("artist","album","genre");
 
 #$CONF['rpms'] = array("libmusicbrainz-cli","libtunepimp","gjay","php-pear-XML-Serializer","libtunepimp-tools");
 $CONF['rpms'] = array("libmusicbrainz-cli","libtunepimp","php-pear-XML-Serializer");
-$CONF['commands'] = array("trm","gettrm","ogginfo","id3info","mp3info");
+$CONF['commands'] = array("trm","gettrm","ogginfo","id3info","mp3info","mpg321");
 ?>
