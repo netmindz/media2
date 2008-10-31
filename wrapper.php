@@ -1,9 +1,11 @@
 <?
 ini_set("include_path",".:classes/:includes/:/home/www/codebase/:/usr/share/pear/");
 
-system("echo \"request=" . $_SERVER['REQUEST_URI'] ."\" >> /tmp/wrapper.log");
 require("standard.inc.php");
+$username = get_remote_username();
  
+system("echo \"username=$username request=" . $_SERVER['REQUEST_URI'] ."\" >> /tmp/wrapper.log");
+
 if(ereg('/([0-9]+)/?\.?',$_SERVER["REQUEST_URI"],$matches)) {
 	$track_id=$matches[1];
 }
@@ -12,13 +14,12 @@ $track = new track();
 $track->get($track_id);
 if(!$track->id) exit("failed to find track");
 
-$username = get_remote_username();
 
 $source = new source();
 $source->getBestSource($track_id);
 
 if(!$source->path) {
-	mail("root","404","path=$source->path id=$track_id");
+#	mail("root","404","path=$source->path id=$track_id");
 	header("Location: http://flat.netmindz.net/~will/media2/splat.mp3");
 	exit();
 }
@@ -41,7 +42,7 @@ $fh = fopen($source->path,'r');
 $filename = basename($source->path);
 $mime = mime_type($source->path);
 if(!$mime) exit("no mime type");
-system("echo \"$source->path opened, sending header\" >> /tmp/wrapper.log");
+system("echo \"user=$username $source->path opened, sending header\" >> /tmp/wrapper.log");
 header("Content-Type: $mime");
 header("Content-Length: ".filesize($source->path));
 header("Content-Disposition: attachment;filename=" . basename($source->path));
@@ -73,7 +74,7 @@ $mp3 = fopen($source->path, "r" );
 fseek($mp3,$range);
 $data = fread( $mp3, $chunk_size);
 while( strlen( $data ) > 0 ) {
-	if(!isset($headers['Range'])) {
+	if((!isset($headers['Range']))||($headers['Range'] == "bytes=0-")) {
 	 	if(($chunks > 1)&&(!$logged)) {
 			$track_pref->incPlayCount($track_id);
 			$track_pref->updatePref($track_id,-10);
@@ -82,13 +83,13 @@ while( strlen( $data ) > 0 ) {
 			$album_pref->updatePref(-5,"inc");
 			$genre_pref->updatePref(-5,"inc");
 			
-			system("echo \"log start $source->path\" >> /tmp/music_error.log");
+			system("echo \"log $username start $source->path\" >> /tmp/wrapper.log");
 			$logged = 0.1;
 		}
 		elseif(($chunks > ($no_chunks/5))&&($logged < 0.2)) {
 			$track_pref->log20percent($track_id);
 			$logged = 0.2;
-			system("echo \"log 20% $source->path\" >> /tmp/music_error.log");
+			system("echo \"log $username 20% $source->path\" >> /tmp/wrapper.log");
 		}
 		elseif(($chunks > ($no_chunks/2))&&($logged < 0.5)) {
 
@@ -99,7 +100,7 @@ while( strlen( $data ) > 0 ) {
 			$genre_pref->updatePref(4);
 
 			$logged = 0.5;
-			system("echo \"log half $source->path\" >> /tmp/music_error.log");
+			system("echo \"log $username half $source->path\" >> /tmp/wrapper.log");
 		}
 		elseif($chunks == $no_chunks) {
 			$track_pref->updatePref($track_id,6);
@@ -109,8 +110,11 @@ while( strlen( $data ) > 0 ) {
 			$genre_pref->updatePref(2);
 
 			$logged = 1;
-			system("echo \"log complete $source->path\" >> /tmp/music_error.log");
+			system("echo \"log $username complete $source->path\" >> /tmp/wrapper.log");
 		}
+	}
+	else {
+		system("echo \"Sending chunk but Range is set to [" . $headers['Range'] . "] for $username $source->path\" >> /tmp/wrapper.log");
 	}	
 #	system("echo \"sending chunk for " . $_SERVER["REQUEST_URI"] . "\" >> /tmp/wrapper.log");
 	echo $data;
