@@ -68,8 +68,8 @@ class track extends track_template {
 			}
 			if($use_details) {
 				print "\n\n *** found MB entry, merging data\n";
-				print_r($details);
-				print_r($trm_details_list[$use_details]);
+				#print_r($details);
+				#print_r($trm_details_list[$use_details]);
 				
 				$details = array_merge($details,$trm_details_list[$use_details]);
 				$details['mb_verified'] = 'y';
@@ -77,16 +77,20 @@ class track extends track_template {
 				print_r($details);
 				print "  ***\n";
 			}
+			else {
+				$details['mb_verified'] = 'n';
+				print "use details is false\n";
+			}
 		}
 
 
 		print_r($details);
-		print_r($results);
-		print_r($trm_details_list);
+		#print_r($results);
+		#print_r($trm_details_list);
 
 		// print_r($details);
 		if(trim($details['title']) != "") {
-			if(isset($details['mb_verified']) && ($details['mb_verified'] == 'y' || $mb_only == "")) {
+			if($details['mb_verified'] == 'y' || $mb_only == "") {
 				$this->saveDetails($details,$addslashes);
 				return(true);
 			}
@@ -97,9 +101,9 @@ class track extends track_template {
 		else {
 			print "\nEAK !!!!\n";
 			print "failed to find any details for $path\n\n";
-			$details['track'] = basename($path);
-			$this->saveDetails($details,$addslashes);
-			return(true);
+			#$details['track'] = basename($path);
+			#$this->saveDetails($details,$addslashes);
+			#return(true);
 		}
 			
 		
@@ -108,7 +112,7 @@ class track extends track_template {
 	
 	function lookupMeta($path)
 	{
-		print "lookupMeta()\n";
+		print "lookupMeta($path)\n";
 		$details = array("album"=>'unknown','artist'=>'unknown','tracknum'=>0);
 		list($type) = array_reverse(explode(".",$path));
 		$type = strtolower($type);
@@ -166,7 +170,7 @@ class track extends track_template {
 
 		if(ereg('^([0-9]+)[ .-]*(.+)',$details['title'],$matches)) {
 			print "Stripping track number from title " . $details['title'] . "\n";
-			print_r($matches);
+			#print_r($matches);
 			$details['tracknum'] = $matches[1];
 			$details['track'] = $matches[2];
 		}
