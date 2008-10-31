@@ -87,12 +87,12 @@ while( strlen( $data ) > 0 ) {
 			$logged = 0.1;
 		}
 		elseif(($chunks > ($no_chunks/5))&&($logged < 0.2)) {
-			$track_pref->log20percent($track_id);
 			$logged = 0.2;
 			system("echo \"log $username 20% $source->path\" >> /tmp/wrapper.log");
 		}
 		elseif(($chunks > ($no_chunks/2))&&($logged < 0.5)) {
 
+			$track_pref->log50percent($track_id);
 			$track_pref->updatePref($track_id,7);
 
 			$artist_pref->updatePref(4);

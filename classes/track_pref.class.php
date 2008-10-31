@@ -40,7 +40,7 @@ class track_pref extends track_pref_template {
 		$this->update();
 	}
 
-	function log20percent($track_id="")
+	function log50percent($track_id="")
 	{
 		if($track_id) $this->track_id=$track_id;
 		$this->lookupOrAdd($track_id);
