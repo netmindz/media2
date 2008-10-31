@@ -18,7 +18,7 @@ class track extends track_template {
 			$this->trm = $trm;
 			if($this->lookupTRM($path)) {
 				$this->added = "NOW()";
-				return($this->add("addslashes"));
+				return($this->add());
 			}
 		}
 		
@@ -27,6 +27,7 @@ class track extends track_template {
 	function lookupTRM($path, $mb_only="")
 	{
 		$details = $this->lookupMeta($path);
+		$details['mb_verified'] = 'n';
 		exec("gettrm $this->trm",$results);
 		print "~";
 		
@@ -78,7 +79,6 @@ class track extends track_template {
 				print "  ***\n";
 			}
 			else {
-				$details['mb_verified'] = 'n';
 				print "use details is false\n";
 			}
 		}
@@ -91,7 +91,7 @@ class track extends track_template {
 		// print_r($details);
 		if(trim($details['title']) != "") {
 			if($details['mb_verified'] == 'y' || $mb_only == "") {
-				$this->saveDetails($details,$addslashes);
+				$this->saveDetails($details);
 				return(true);
 			}
 			else {
@@ -102,7 +102,7 @@ class track extends track_template {
 			print "\nEAK !!!!\n";
 			print "failed to find any details for $path\n\n";
 			#$details['track'] = basename($path);
-			#$this->saveDetails($details,$addslashes);
+			#$this->saveDetails($details);
 			#return(true);
 		}
 			
