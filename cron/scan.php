@@ -2,12 +2,26 @@
 ini_set("include_path",".:../classes:../includes:" . ini_get('include_path'));
 require("standard.inc.php");
 
+$fail = false;
 foreach($CONF['rpms'] as $rpm) {
 	exec("rpm -q $rpm",$result,$error);
 	if($error) {
 		print "ERROR: $rpm is required\n";
-		exit(1);
+		$fail = true;
 	}
+}
+
+foreach($CONF['commands'] as $command) {
+	exec("which $command 2>&1",$result,$return);
+	if($return) {
+		print "ERROR: no $command\n";
+		$fail = true;
+	}
+	
+}
+
+if($fail) {
+	exit(1);
 }
 
 set_time_limit(0);

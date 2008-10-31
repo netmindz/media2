@@ -134,13 +134,13 @@ class track extends track_template {
 		elseif($type == "mp3") {
 			
 			# Try ID3v2 first as mp3info also gives duration
-			#exec("mp3info -p \"artist=%a\nalbum=%l\ntitle=%t\ngenre=%g\nduration=00:%m:%s\" \"$path\"",$results);
-			#foreach($results as $line) {
-			#	if(ereg('^([^=]+)=(.+)$',$line,$matches)) {
-			#		$details[$matches[1]] = $matches[2];
-			#	}
-			#}
-			#unset($results);
+			exec("mp3info -p \"artist=%a\nalbum=%l\ntitle=%t\ngenre=%g\nduration=00:%m:%s\" \"$path\"",$results);
+			foreach($results as $line) {
+				if(ereg('^([^=]+)=(.+)$',$line,$matches)) {
+					$details[$matches[1]] = $matches[2];
+				}
+			}
+			unset($results);
 			
 			$map = array(
 			'Title/songname/content description'=>'title',

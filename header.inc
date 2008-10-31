@@ -42,7 +42,7 @@ Search <input type="text" name="keyword" value="<? if(isset($_POST['keyword'])) 
 if(ereg("index.php",$PHP_SELF)) { 
 	// TODO - fix the problem of duplicate sources
 	$db = new database();
-	$db->query("select SEC_TO_TIME(sum(TIME_TO_SEC(duration))) as total_time from tracks left join sources on sources.track_id=tracks.id  where _archived != 'y' and sources.host_id in (select id from hosts where hosts.status='online')");
+	$db->query("select SEC_TO_TIME(sum(TIME_TO_SEC(duration))) as total_time from tracks inner join sources on sources.track_id=tracks.id  where _archived != 'y' and sources.host_id in (select id from hosts where hosts.status='online')");
 	$row = $db->getNextRow();
 	$total_time = explode(":",$row['total_time']);
 	$days = floor($total_time[0] / 24);
