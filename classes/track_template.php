@@ -1,7 +1,7 @@
 <?
 class track_template
 {
-	var $id, $trm, $tracknum, $name, $artist_id, $album_id, $genre_id, $duration, $bpm, $volume_diff, $year, $last_lookup, $mb_verified, $mb_track_id, $_update_id3, $added, $_archived;
+	var $id, $puid, $tracknum, $name, $artist_id, $album_id, $genre_id, $duration, $bpm, $volume_diff, $year, $last_lookup, $mb_verified, $mb_track_id, $_update_id3, $added, $_archived;
 	
 	var $database, $lastError, $DN;
 	var $_PK, $_table;
@@ -31,7 +31,7 @@ class track_template
 	{
 		$this->id = 0;
 
-		$this->trm = "";
+		$this->puid = "";
 		$this->tracknum = "";
 		$this->name = "";
 		$this->artist_id = "";
@@ -71,7 +71,7 @@ class track_template
 		);
 
 		$this->_field_descs['id'] = array ("pk" => "1", "auto" => "1", "type" => "int(10) unsigned", "length" => "10", "gen_type" => "int");
-		$this->_field_descs['trm'] = array ("type" => "varchar(50)", "length" => "50", "gen_type" => "string");
+		$this->_field_descs['puid'] = array ("type" => "varchar(37)", "length" => "37", "gen_type" => "string");
 		$this->_field_descs['tracknum'] = array ("type" => "int(2) unsigned zerofill", "length" => "2", "gen_type" => "int");
 		$this->_field_descs['name'] = array ("type" => "varchar(255)", "length" => "255", "gen_type" => "string");
 		$this->_field_descs['artist_id'] = array ("type" => "int(10) unsigned", "length" => "10", "fk" => "artist", "gen_type" => "int");
@@ -152,9 +152,9 @@ class track_template
 		}//IF
 
 		
-		$raw_sql  = "INSERT INTO tracks (`trm`, `tracknum`, `name`, `artist_id`, `album_id`, `genre_id`, `duration`, `bpm`, `volume_diff`, `year`, `last_lookup`, `mb_verified`, `mb_track_id`, `_update_id3`, `added`, `_archived`)";
+		$raw_sql  = "INSERT INTO tracks (`puid`, `tracknum`, `name`, `artist_id`, `album_id`, `genre_id`, `duration`, `bpm`, `volume_diff`, `year`, `last_lookup`, `mb_verified`, `mb_track_id`, `_update_id3`, `added`, `_archived`)";
 		
-		$raw_sql.= " VALUES ('".$this->database->escape($this->trm)."', '".$this->database->escape($this->tracknum)."', '".$this->database->escape($this->name)."', '".$this->database->escape($this->artist_id)."', '".$this->database->escape($this->album_id)."', '".$this->database->escape($this->genre_id)."', '".$this->database->escape($this->duration)."', '".$this->database->escape($this->bpm)."', '".$this->database->escape($this->volume_diff)."', '".$this->database->escape($this->year)."', '".$this->database->escape($this->last_lookup)."', '".$this->database->escape($this->mb_verified)."', '".$this->database->escape($this->mb_track_id)."', '".$this->database->escape($this->_update_id3)."', '".$this->database->escape($this->added)."', '".$this->database->escape($this->_archived)."')";
+		$raw_sql.= " VALUES ('".$this->database->escape($this->puid)."', '".$this->database->escape($this->tracknum)."', '".$this->database->escape($this->name)."', '".$this->database->escape($this->artist_id)."', '".$this->database->escape($this->album_id)."', '".$this->database->escape($this->genre_id)."', '".$this->database->escape($this->duration)."', '".$this->database->escape($this->bpm)."', '".$this->database->escape($this->volume_diff)."', '".$this->database->escape($this->year)."', '".$this->database->escape($this->last_lookup)."', '".$this->database->escape($this->mb_verified)."', '".$this->database->escape($this->mb_track_id)."', '".$this->database->escape($this->_update_id3)."', '".$this->database->escape($this->added)."', '".$this->database->escape($this->_archived)."')";
 		
 		$raw_sql = str_replace("'NOW()'", "NOW()", $raw_sql);		//remove quotes
 		$sql = str_replace("'NULL'", "NULL", $raw_sql);			//remove quotes
@@ -231,10 +231,9 @@ class track_template
 		}//IF
 
 		$raw_sql  = "UPDATE tracks SET ";
-		$raw_sql.= "`trm`='".$this->database->escape($this->trm)."', `tracknum`='".$this->database->escape($this->tracknum)."', `name`='".$this->database->escape($this->name)."', `artist_id`='".$this->database->escape($this->artist_id)."', `album_id`='".$this->database->escape($this->album_id)."', `genre_id`='".$this->database->escape($this->genre_id)."', `duration`='".$this->database->escape($this->duration)."', `bpm`='".$this->database->escape($this->bpm)."', `volume_diff`='".$this->database->escape($this->volume_diff)."', `year`='".$this->database->escape($this->year)."', `last_lookup`='".$this->database->escape($this->last_lookup)."', `mb_verified`='".$this->database->escape($this->mb_verified)."', `mb_track_id`='".$this->database->escape($this->mb_track_id)."', `_update_id3`='".$this->database->escape($this->_update_id3)."', `added`='".$this->database->escape($this->added)."', `_archived`='".$this->database->escape($this->_archived)."'";
-		$raw_sql.= " WHERE 1
-
-		AND id = '$this->id' ";
+		$raw_sql.= "`puid`='".$this->database->escape($this->puid)."', `tracknum`='".$this->database->escape($this->tracknum)."', `name`='".$this->database->escape($this->name)."', `artist_id`='".$this->database->escape($this->artist_id)."', `album_id`='".$this->database->escape($this->album_id)."', `genre_id`='".$this->database->escape($this->genre_id)."', `duration`='".$this->database->escape($this->duration)."', `bpm`='".$this->database->escape($this->bpm)."', `volume_diff`='".$this->database->escape($this->volume_diff)."', `year`='".$this->database->escape($this->year)."', `last_lookup`='".$this->database->escape($this->last_lookup)."', `mb_verified`='".$this->database->escape($this->mb_verified)."', `mb_track_id`='".$this->database->escape($this->mb_track_id)."', `_update_id3`='".$this->database->escape($this->_update_id3)."', `added`='".$this->database->escape($this->added)."', `_archived`='".$this->database->escape($this->_archived)."'";
+		$raw_sql.= " WHERE 
+		id = '".$this->database->escape($this->id)."'";
 		
 		$raw_sql = str_replace("'NOW()'", "NOW()", $raw_sql);		//remove quotes
 		$sql = str_replace("'NULL'", "NULL", $raw_sql);			//remove quotes
@@ -256,6 +255,7 @@ class track_template
 	* @param string $fieldname		-	The exact name of the field in the table / object property
 	* @desc Sets individual fields in the record, allowing special cases to be executed (eg. sess_expires), and leaving others unchanged.
  	*/
+	/*
 	function set($fieldname) {
 		
 		//define the SQL to use to UPDATE the field...
@@ -266,9 +266,8 @@ class track_template
 		
 		
 		//Now add the WHERE clause
-		$sql.= " WHERE 1
-
-		AND id = '$this->id' ";
+		$sql.= " WHERE 
+		id = '".$this->database->escape($this->id)."'";
 		
 		if ($this->database->query($sql))
 			return true;
@@ -276,7 +275,7 @@ class track_template
 			return false;
 		
 	}//set
-	
+	*/
 	
 	/**
 	* @return bool
@@ -287,7 +286,7 @@ class track_template
 	function setField($field,$value)
 	{
 		$this->setProperties(array($field=>$value));
-		return($this->set($field));
+		return($this->update());
 	}
 	
 	
@@ -300,9 +299,7 @@ class track_template
 	 */
 	function delete($id)
 	{
-		$sql = "DELETE FROM tracks WHERE 1
-
-		AND id = '$id' ";
+		$sql = "DELETE FROM tracks WHERE id = '".$this->database->escape($id)."' ";
 		
 		if ($this->database->query($sql))
 			return true;
@@ -330,6 +327,44 @@ class track_template
 			return false;
 		}//IF
 	}//getList
+
+
+	function getArtistList(artist $artist) {
+		return($this->getList("where artist_id=$artist->id"));
+	}
+	
+	function getArtist()
+	{
+		$artist = new artist();
+		$artist->get($this->artist_id);
+		return($artist);
+	}
+	
+
+	function getAlbumList(album $album) {
+		return($this->getList("where album_id=$album->id"));
+	}
+	
+	function getAlbum()
+	{
+		$album = new album();
+		$album->get($this->album_id);
+		return($album);
+	}
+	
+
+	function getGenreList(genre $genre) {
+		return($this->getList("where genre_id=$genre->id"));
+	}
+	
+	function getGenre()
+	{
+		$genre = new genre();
+		$genre->get($this->genre_id);
+		return($genre);
+	}
+	
+
 		
 	
 	
@@ -378,10 +413,10 @@ class track_template
 	 * @desc Extracts the requested record from the database and puts it into the properties of the object
 	 */
 	function get($id)
-	{ 
+	{
+		settype($id,"int");
 		
-		$sql = "WHERE 1
-		AND id = '$id'";
+		$sql = "WHERE id = '".$this->database->escape($id)."'";
 		
 		$count = $this->getList($sql);
 		
@@ -483,7 +518,6 @@ class track_template
 							$this->$key = $child->upload($_FILES[$key]["tmp_name"],$_FILES[$key]["name"]);
 						}
 						else {
-							// use old value
 							$this->$key = $value;
 						}
 					}
@@ -502,7 +536,14 @@ class track_template
 						if(($this->_field_descs[$key]['gen_type'] == "string")&&(class_exists("XString"))) {
 		                                        $value = XString::FilterMS_ASCII($value);
                                			}
-						$this->$key = $value;
+
+						$setter_name = "set".ucwords($key);
+						if(method_exists($this,$setter_name)) {
+							$this->$setter_name($value);
+						}
+						else {
+							$this->$key = $value;
+						}
 					}//IF key matched
 				}
 			}//FOREACH element
@@ -765,8 +806,8 @@ class track_template
 			  case 'int' :
 			  case 'number' :
 				preg_match ("/\((\d+)\)/", $this->_field_descs[$property]['type'], $matches);		//get field length
-				if ($matches[1] ==1 || 			//a tiny int of display length 1 char is presumed to be a boolean
-						(isset($CONF['track'][$property]['max']) && $CONF['track'][$property]['max']==1) ){		//or setting the max value to 1 presumes a boolean
+				if (isset($matches[1]) && ($matches[1] ==1 || 			//a tiny int of display length 1 char is presumed to be a boolean
+						(isset($CONF['track'][$property]['max']) && $CONF['track'][$property]['max']==1)) ){		//or setting the max value to 1 presumes a boolean
 					$html.= "<input type=\"radio\" name=\"$input_name\" value=\"1\" id=\"$html_id\"";
 					if($property_value)	//allow any possible value for True
 						$html.= " checked";
@@ -794,8 +835,10 @@ class track_template
 				preg_match ("/\((\d+),?(\d+)?\)/", $this->_field_descs[$property]['type'], $matches);		//get field length
 				if (preg_match ("/decimal/", $this->_field_descs[$property]['type']) )		//decimal
 					$maxlength = $matches[1] + $matches[2] + 1;	//need to add space for decimalpoint!
-				else
+				elseif(isset($matches[1]))
 					$maxlength = $matches[1];
+				else
+					$maxlength = 11;
 				
 				if (isset($CONF['track'][$property]['size']))
 					$size = $CONF['track'][$property]['size'];

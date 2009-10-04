@@ -118,9 +118,8 @@ class dead_source_template
 
 		$raw_sql  = "UPDATE dead_sources SET ";
 		$raw_sql.= "`path`='".$this->database->escape($this->path)."', `reason`='".$this->database->escape($this->reason)."', `notes`='".$this->database->escape($this->notes)."'";
-		$raw_sql.= " WHERE 1
-
-		AND id = '$this->id' ";
+		$raw_sql.= " WHERE 
+		id = '".$this->database->escape($this->id)."'";
 		
 		$raw_sql = str_replace("'NOW()'", "NOW()", $raw_sql);		//remove quotes
 		$sql = str_replace("'NULL'", "NULL", $raw_sql);			//remove quotes
@@ -142,6 +141,7 @@ class dead_source_template
 	* @param string $fieldname		-	The exact name of the field in the table / object property
 	* @desc Sets individual fields in the record, allowing special cases to be executed (eg. sess_expires), and leaving others unchanged.
  	*/
+	/*
 	function set($fieldname) {
 		
 		//define the SQL to use to UPDATE the field...
@@ -152,9 +152,8 @@ class dead_source_template
 		
 		
 		//Now add the WHERE clause
-		$sql.= " WHERE 1
-
-		AND id = '$this->id' ";
+		$sql.= " WHERE 
+		id = '".$this->database->escape($this->id)."'";
 		
 		if ($this->database->query($sql))
 			return true;
@@ -162,7 +161,7 @@ class dead_source_template
 			return false;
 		
 	}//set
-	
+	*/
 	
 	/**
 	* @return bool
@@ -173,7 +172,7 @@ class dead_source_template
 	function setField($field,$value)
 	{
 		$this->setProperties(array($field=>$value));
-		return($this->set($field));
+		return($this->update());
 	}
 	
 	
@@ -186,9 +185,7 @@ class dead_source_template
 	 */
 	function delete($id)
 	{
-		$sql = "DELETE FROM dead_sources WHERE 1
-
-		AND id = '$id' ";
+		$sql = "DELETE FROM dead_sources WHERE id = '".$this->database->escape($id)."' ";
 		
 		if ($this->database->query($sql))
 			return true;
@@ -216,6 +213,8 @@ class dead_source_template
 			return false;
 		}//IF
 	}//getList
+
+
 		
 	
 	
@@ -264,10 +263,10 @@ class dead_source_template
 	 * @desc Extracts the requested record from the database and puts it into the properties of the object
 	 */
 	function get($id)
-	{ 
+	{
+		settype($id,"int");
 		
-		$sql = "WHERE 1
-		AND id = '$id'";
+		$sql = "WHERE id = '".$this->database->escape($id)."'";
 		
 		$count = $this->getList($sql);
 		
@@ -369,7 +368,6 @@ class dead_source_template
 							$this->$key = $child->upload($_FILES[$key]["tmp_name"],$_FILES[$key]["name"]);
 						}
 						else {
-							// use old value
 							$this->$key = $value;
 						}
 					}
@@ -388,7 +386,14 @@ class dead_source_template
 						if(($this->_field_descs[$key]['gen_type'] == "string")&&(class_exists("XString"))) {
 		                                        $value = XString::FilterMS_ASCII($value);
                                			}
-						$this->$key = $value;
+
+						$setter_name = "set".ucwords($key);
+						if(method_exists($this,$setter_name)) {
+							$this->$setter_name($value);
+						}
+						else {
+							$this->$key = $value;
+						}
 					}//IF key matched
 				}
 			}//FOREACH element
@@ -651,8 +656,8 @@ class dead_source_template
 			  case 'int' :
 			  case 'number' :
 				preg_match ("/\((\d+)\)/", $this->_field_descs[$property]['type'], $matches);		//get field length
-				if ($matches[1] ==1 || 			//a tiny int of display length 1 char is presumed to be a boolean
-						(isset($CONF['dead_source'][$property]['max']) && $CONF['dead_source'][$property]['max']==1) ){		//or setting the max value to 1 presumes a boolean
+				if (isset($matches[1]) && ($matches[1] ==1 || 			//a tiny int of display length 1 char is presumed to be a boolean
+						(isset($CONF['dead_source'][$property]['max']) && $CONF['dead_source'][$property]['max']==1)) ){		//or setting the max value to 1 presumes a boolean
 					$html.= "<input type=\"radio\" name=\"$input_name\" value=\"1\" id=\"$html_id\"";
 					if($property_value)	//allow any possible value for True
 						$html.= " checked";
@@ -680,8 +685,10 @@ class dead_source_template
 				preg_match ("/\((\d+),?(\d+)?\)/", $this->_field_descs[$property]['type'], $matches);		//get field length
 				if (preg_match ("/decimal/", $this->_field_descs[$property]['type']) )		//decimal
 					$maxlength = $matches[1] + $matches[2] + 1;	//need to add space for decimalpoint!
-				else
+				elseif(isset($matches[1]))
 					$maxlength = $matches[1];
+				else
+					$maxlength = 11;
 				
 				if (isset($CONF['dead_source'][$property]['size']))
 					$size = $CONF['dead_source'][$property]['size'];

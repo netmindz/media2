@@ -140,9 +140,8 @@ class as_spool_item_template
 
 		$raw_sql  = "UPDATE as_spool_items SET ";
 		$raw_sql.= "`as_account_id`='".$this->database->escape($this->as_account_id)."', `track_id`='".$this->database->escape($this->track_id)."', `played`='".$this->database->escape($this->played)."'";
-		$raw_sql.= " WHERE 1
-
-		AND id = '$this->id' ";
+		$raw_sql.= " WHERE 
+		id = '".$this->database->escape($this->id)."'";
 		
 		$raw_sql = str_replace("'NOW()'", "NOW()", $raw_sql);		//remove quotes
 		$sql = str_replace("'NULL'", "NULL", $raw_sql);			//remove quotes
@@ -164,6 +163,7 @@ class as_spool_item_template
 	* @param string $fieldname		-	The exact name of the field in the table / object property
 	* @desc Sets individual fields in the record, allowing special cases to be executed (eg. sess_expires), and leaving others unchanged.
  	*/
+	/*
 	function set($fieldname) {
 		
 		//define the SQL to use to UPDATE the field...
@@ -174,9 +174,8 @@ class as_spool_item_template
 		
 		
 		//Now add the WHERE clause
-		$sql.= " WHERE 1
-
-		AND id = '$this->id' ";
+		$sql.= " WHERE 
+		id = '".$this->database->escape($this->id)."'";
 		
 		if ($this->database->query($sql))
 			return true;
@@ -184,7 +183,7 @@ class as_spool_item_template
 			return false;
 		
 	}//set
-	
+	*/
 	
 	/**
 	* @return bool
@@ -195,7 +194,7 @@ class as_spool_item_template
 	function setField($field,$value)
 	{
 		$this->setProperties(array($field=>$value));
-		return($this->set($field));
+		return($this->update());
 	}
 	
 	
@@ -208,9 +207,7 @@ class as_spool_item_template
 	 */
 	function delete($id)
 	{
-		$sql = "DELETE FROM as_spool_items WHERE 1
-
-		AND id = '$id' ";
+		$sql = "DELETE FROM as_spool_items WHERE id = '".$this->database->escape($id)."' ";
 		
 		if ($this->database->query($sql))
 			return true;
@@ -238,6 +235,32 @@ class as_spool_item_template
 			return false;
 		}//IF
 	}//getList
+
+
+	function getAs_accountList(as_account $as_account) {
+		return($this->getList("where as_account_id=$as_account->id"));
+	}
+	
+	function getAs_account()
+	{
+		$as_account = new as_account();
+		$as_account->get($this->as_account_id);
+		return($as_account);
+	}
+	
+
+	function getTrackList(track $track) {
+		return($this->getList("where track_id=$track->id"));
+	}
+	
+	function getTrack()
+	{
+		$track = new track();
+		$track->get($this->track_id);
+		return($track);
+	}
+	
+
 		
 	
 	
@@ -286,10 +309,10 @@ class as_spool_item_template
 	 * @desc Extracts the requested record from the database and puts it into the properties of the object
 	 */
 	function get($id)
-	{ 
+	{
+		settype($id,"int");
 		
-		$sql = "WHERE 1
-		AND id = '$id'";
+		$sql = "WHERE id = '".$this->database->escape($id)."'";
 		
 		$count = $this->getList($sql);
 		
@@ -391,7 +414,6 @@ class as_spool_item_template
 							$this->$key = $child->upload($_FILES[$key]["tmp_name"],$_FILES[$key]["name"]);
 						}
 						else {
-							// use old value
 							$this->$key = $value;
 						}
 					}
@@ -410,7 +432,14 @@ class as_spool_item_template
 						if(($this->_field_descs[$key]['gen_type'] == "string")&&(class_exists("XString"))) {
 		                                        $value = XString::FilterMS_ASCII($value);
                                			}
-						$this->$key = $value;
+
+						$setter_name = "set".ucwords($key);
+						if(method_exists($this,$setter_name)) {
+							$this->$setter_name($value);
+						}
+						else {
+							$this->$key = $value;
+						}
 					}//IF key matched
 				}
 			}//FOREACH element
@@ -673,8 +702,8 @@ class as_spool_item_template
 			  case 'int' :
 			  case 'number' :
 				preg_match ("/\((\d+)\)/", $this->_field_descs[$property]['type'], $matches);		//get field length
-				if ($matches[1] ==1 || 			//a tiny int of display length 1 char is presumed to be a boolean
-						(isset($CONF['as_spool_item'][$property]['max']) && $CONF['as_spool_item'][$property]['max']==1) ){		//or setting the max value to 1 presumes a boolean
+				if (isset($matches[1]) && ($matches[1] ==1 || 			//a tiny int of display length 1 char is presumed to be a boolean
+						(isset($CONF['as_spool_item'][$property]['max']) && $CONF['as_spool_item'][$property]['max']==1)) ){		//or setting the max value to 1 presumes a boolean
 					$html.= "<input type=\"radio\" name=\"$input_name\" value=\"1\" id=\"$html_id\"";
 					if($property_value)	//allow any possible value for True
 						$html.= " checked";
@@ -702,8 +731,10 @@ class as_spool_item_template
 				preg_match ("/\((\d+),?(\d+)?\)/", $this->_field_descs[$property]['type'], $matches);		//get field length
 				if (preg_match ("/decimal/", $this->_field_descs[$property]['type']) )		//decimal
 					$maxlength = $matches[1] + $matches[2] + 1;	//need to add space for decimalpoint!
-				else
+				elseif(isset($matches[1]))
 					$maxlength = $matches[1];
+				else
+					$maxlength = 11;
 				
 				if (isset($CONF['as_spool_item'][$property]['size']))
 					$size = $CONF['as_spool_item'][$property]['size'];
