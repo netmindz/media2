@@ -14,6 +14,8 @@ require("host.class.php");
 require("music_list.class.php");
 require("audioscrobbler.php");
 
+define("CLIENTID","9d5a08d9649a9290020791c43868f9a3");
+
 function exp_rand($min, $max)
 {
         $range = ($max - $min)+1;
@@ -65,6 +67,6 @@ function get_http_mount_point()
 $track_type_list = array("artist","album","genre");
 
 #$CONF['rpms'] = array("libmusicbrainz-cli","libtunepimp","gjay","php-pear-XML-Serializer","libtunepimp-tools");
-$CONF['rpms'] = array("libmusicbrainz-cli","libtunepimp","php-pear-XML-Serializer");
-$CONF['commands'] = array("trm","gettrm","ogginfo","id3info","mp3info","mpg321");
+$CONF['rpms'] = array("libtunepimp","php-pear-XML-Serializer");
+$CONF['commands'] = array("puid","ogginfo","id3info","mp3info","mpg321");
 ?>

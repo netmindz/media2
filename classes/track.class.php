@@ -28,7 +28,7 @@ class track extends track_template {
 	{
 		$details = $this->lookupMeta($path);
 		$details['mb_verified'] = 'n';
-		exec("getpuid $this->puid",$results);
+		exec("puid -i ".CLIENTID." \"$path\"",$results);
 		print "~";
 		
 		$puid_details_list = array();
@@ -38,12 +38,14 @@ class track extends track_template {
 			if($mb_only) return(0);
 		}
 		else {
-			$use_details = false;	
+			$use_details = false;
+			$version = array('title'=>0,'artist'=>0,'tracknum'=>0,'duration'=>0,'album'=>0,'puid'=>0);
 			foreach($results as $line) {
 				if(eregi('[ ]*([^:]+): \'?(.+)$',$line,$matches)) {
 					// it's late ...
 					$matches[2] = ereg_replace('\'$',"",$matches[2]);
-					$key = 		strtolower($matches[1]);
+					$key = 	strtolower($matches[1]);
+					if($key == "track") $key = "title";
 					$value = $matches[2];
 					$version[$key]++;
 					$puid_details_list[$version[$key]][$key] = $matches[2];
@@ -53,17 +55,19 @@ class track extends track_template {
 #			print_r($puid_details_list);	
 			foreach($puid_details_list as $puid_details_key=>$puid_details) {
 				foreach($puid_details as $key=>$value) {
-					$format_method = "format$key";
+					if(in_array($key,array('artist','album','title'))) {
+						$format_method = "format$key";
 						if(method_exists($this,$format_method)) {
-						$value = $this->$format_method($value);
-							$details[$key] = $value;
+							$value = $this->$format_method($value);
+								$details[$key] = $value;
+						}
+							$perc = FuzzySearch::calculateLevenshteinPercentage($value,$details[$key]);
+							print "compare $value , " . $details[$key] . " = $perc\n";
+	#					print "perc = $perc [$key]($value/$details[$key])\n";
+							$percs[$key] = $perc;
 					}
-	
-						$perc = FuzzySearch::calculateLevenshteinPercentage($value,$details[$key]);
-#					print "perc = $perc [$key]($value/$details[$key])\n";
-						$percs[$key] = $perc;
 				}
-				if( (($percs['artist'] < 20)&&($percs['album'] < 20)&&($percs['track'] < 20)) || (!$details['title']) ) {
+				if( (($percs['artist'] < 20)&&($percs['album'] < 20)&&($percs['title'] < 20)) || (!$details['title']) ) {
 					$use_details = $puid_details_key;
 				}
 			}
@@ -81,14 +85,13 @@ class track extends track_template {
 			else {
 				print "use details is false\n";
 			}
+
 		}
 
 
-		print_r($details);
 		#print_r($results);
 		#print_r($puid_details_list);
 
-		// print_r($details);
 		if(trim($details['title']) != "") {
 			if($details['mb_verified'] == 'y' || $mb_only == "") {
 				$this->saveDetails($details);
@@ -112,7 +115,7 @@ class track extends track_template {
 	
 	function lookupMeta($path)
 	{
-		print "lookupMeta($path)\n";
+		print "lookupMeta()\n";
 		$details = array("album"=>'unknown','artist'=>'unknown','tracknum'=>0);
 		list($type) = array_reverse(explode(".",$path));
 		$type = strtolower($type);
@@ -123,9 +126,7 @@ class track extends track_template {
 					$details[strtolower(trim($matches[1]))] = $matches[2];
 				}
 				if(ereg("Playback length: (.+)",$line,$matches)) {
-					$details['duration'] = "00:" .ereg_replace('\.[0-9]*s',"", $matches[1]);
-					$details['duration'] = "00:" .ereg_replace(':[0-9]*m',"", $details['duration']);
-					print "duration=" . $details['duration'] . "\n";
+					$details['duration'] = $this->formatDuration($matches[1]);
 				}
 			}
 						
@@ -157,7 +158,9 @@ class track extends track_template {
 			exec("id3info \"$path\"",$results);
 			foreach($results as $line) {
 				if(ereg('\((.+)\): ([^(].+)',$line,$matches)) {
-					$details[$map[$matches[1]]] = $matches[2];
+					if(isset($map[$matches[1]])) {
+						$details[$map[$matches[1]]] = $matches[2];
+					}
 				}
 			}
 			list($details['tracknum']) = explode("/",$details['tracknum']);
@@ -190,13 +193,17 @@ class track extends track_template {
 			$pre_duration = $duration;
 			$s_in_min = 60;
 			$s_in_hour = 60 * $s_in_min;
-			if(ereg("([0-9]+) ms",$duration,$matches)) {
+			if(ereg("([0-9]+) ms|^([0-9]{6,7})$",$duration,$matches)) {
 				$seconds = $matches[1] / 1000;
 			}
-			elseif(ereg('^([0-9]+):([0-9]+):([0-9]+)$',$duration,$matches)) {
+			elseif(ereg('^([0-9]+)h?:([0-9]+)m?:([0-9.]+)s?$',$duration,$matches)) {
 				$seconds = $matches[3];
 				$seconds += ($matches[2] * $s_in_min);
 				$seconds += ($matches[1] * $s_in_hour);
+			}
+			elseif(ereg('^([0-9]+)m?:([0-9.]+)s?$',$duration,$matches)) {
+				$seconds = $matches[2];
+				$seconds += ($matches[1] * $s_in_min);
 			}
 			else {
 				print "duration parse fail for $duration\n";
@@ -206,6 +213,7 @@ class track extends track_template {
 			}
 			// HACK !!!!! date('H:i:s',0) returns 01:00:00 not 00:00:00
 			$duration = date('H:i:s',$seconds);
+			#print "d=$duration for $seconds when given $pre_duration\n";
 			$parts = explode(":",$duration);
 			$parts[0] = $parts[0] - 1;
 			foreach($parts as $i=>$value) {

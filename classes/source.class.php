@@ -1,6 +1,4 @@
 <?
-require("cached_puid.class.php");
-
 
 require("source_template.php");
 
@@ -36,7 +34,7 @@ class source extends source_template {
 			//*****************************************
 			if($this->type != "dir") $this->getBitrate();
 			
-			$puid = $this->getTrm();
+			$puid = $this->getPUID();
 			
 			if($puid) {
 				$track = new track();
@@ -45,7 +43,6 @@ class source extends source_template {
 			
 				if($this->track_id)	{
 					$track->setProperties(array('_archived'=>'n'));
-					$track->set("_archived");
 					return($this->add("addslashes"));
 				}
 				else {
@@ -96,8 +93,9 @@ class source extends source_template {
 		return($this->bitrate);
 	}
 	
-	function getTRM()
+	function getPUID()
 	{
+	/*
 		exec("id3info \"$this->path\" | grep 'MusicBrainz TRM Id' | awk '{ print $10}'",$id3results);
 		if(count($id3results)) {
 			$puid = trim($id3results[0]);
@@ -119,12 +117,15 @@ class source extends source_template {
 			return($cached_puid->puid);
 		}
 		else {
+		*/
 			$path = $this->path;
 			$is_tmp = false;
 			if(!eregi('ogg$',$path)) {
-				#print "Decoding $path\n";	
+				print "Transcode()\n";	
 				$path = "/tmp/" . eregi_replace('[^a-z0-9]','',basename($this->path)) . ".wav";
 				exec("mpg321 -q -w \"$path\" \"$this->path\"");
+				exec("oggenc -Q $path");
+				$path = ereg_replace("\.wav",".ogg",$path);
 				$is_tmp = true;
 			}
 			$sanity = 0;
@@ -132,15 +133,16 @@ class source extends source_template {
 			while((($results[0] == "")||(eregi("too busy",$results[0])))&&($sanity < 10)) { 
 				unset($results);
 				#print "getTRM($this->path)";
-				print "getTRM()";
-				exec("puid \"$path\" 2>&1",$results,$return);
+				print "getPUID()";
+				exec("puid ".CLIENTID." \"$path\" 2>&1",$results,$return);
 				if(($return == 0)&&(ereg('^[0-9a-z_-]+$',trim($results[0])))) {
 					$puid = $results[0];
-					$cached_puid->cache($this->path,$puid);
+//					$cached_puid->cache($this->path,$puid);
 					if($is_tmp) unlink($path);
 					return($puid);
 				}
 				else {
+					print "Source: $path\n";
 					print_r($results);
 				}
 				print "Waiting to retry puid ...\n";
@@ -148,7 +150,7 @@ class source extends source_template {
 				$sanity++;
 			}
 			if($is_tmp) unlink($path);
-		}
+		//}
 	}
 	
 	function getBestSource($track_id)
