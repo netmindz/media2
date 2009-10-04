@@ -1,7 +1,7 @@
 <?
 class music_list_template
 {
-	var $TRACK_id, $ARTIST_id, $ALBUM_id, $GENRE_id, $TRACK_trm, $TRACK_tracknum, $TRACK_name, $TRACK_artist_id, $TRACK_album_id, $TRACK_genre_id, $TRACK_duration, $TRACK_bpm, $TRACK_volume_diff, $TRACK_year, $TRACK_last_lookup, $TRACK_mb_verified, $TRACK_mb_track_id, $TRACK__update_id3, $TRACK_added, $TRACK__archived, $ARTIST_mb_id, $ARTIST_name, $ALBUM_mb_id, $ALBUM_name, $ALBUM_cd_number, $ALBUM_album_artist_id, $ALBUM_amazon_asin, $GENRE_mb_id, $GENRE_name;
+	var $TRACK_id, $ARTIST_id, $ALBUM_id, $GENRE_id, $TRACK_puid, $TRACK_tracknum, $TRACK_name, $TRACK_artist_id, $TRACK_album_id, $TRACK_genre_id, $TRACK_duration, $TRACK_bpm, $TRACK_volume_diff, $TRACK_year, $TRACK_last_lookup, $TRACK_mb_verified, $TRACK_mb_track_id, $TRACK__update_id3, $TRACK_added, $TRACK__archived, $ARTIST_mb_id, $ARTIST_name, $ALBUM_mb_id, $ALBUM_name, $ALBUM_cd_number, $ALBUM_album_artist_id, $ALBUM_amazon_asin, $GENRE_mb_id, $GENRE_name;
 	
 	var $database, $lastError, $DN;
 	var $_PK, $_table;
@@ -34,7 +34,7 @@ class music_list_template
 		$this->ALBUM_id = 0;
 		$this->GENRE_id = 0;
 
-		$this->TRACK_trm = "";
+		$this->TRACK_puid = "";
 		$this->TRACK_tracknum = "";
 		$this->TRACK_name = "";
 		$this->TRACK_artist_id = "";
@@ -72,7 +72,7 @@ class music_list_template
 			'artists'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'as_accounts'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'as_spool_items'	=>	array ("pk"	=>	"id", "comment"	=>	""),
-			'cached_trms'	=>	array ("pk"	=>	"id", "comment"	=>	""),
+			'cached_puids'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'dead_sources'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'genres'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'hosts'	=>	array ("pk"	=>	"id", "comment"	=>	""),
@@ -83,7 +83,7 @@ class music_list_template
 		);
 
 		$this->_field_descs['TRACK_id'] = array ("pk" => "1", "type" => "int(10) unsigned", "length" => "10", "gen_type" => "int");
-		$this->_field_descs['TRACK_trm'] = array ("type" => "varchar(50)", "length" => "50", "gen_type" => "string");
+		$this->_field_descs['TRACK_puid'] = array ("type" => "varchar(50)", "length" => "50", "gen_type" => "string");
 		$this->_field_descs['TRACK_tracknum'] = array ("type" => "int(2) unsigned zerofill", "length" => "2", "gen_type" => "int");
 		$this->_field_descs['TRACK_name'] = array ("type" => "varchar(255)", "length" => "255", "gen_type" => "string");
 		$this->_field_descs['TRACK_artist_id'] = array ("type" => "int(10) unsigned", "length" => "10", "gen_type" => "int");
@@ -132,7 +132,7 @@ class music_list_template
 		if ($joins && !is_array($joins))
 			trigger_error('Non-array submitted for \$joins paramter of '.$this.'->getList', E_USER_WARNING);
 		
-		$select = "SELECT tracks.id as TRACK_id, tracks.trm as TRACK_trm, tracks.tracknum as TRACK_tracknum, tracks.name as TRACK_name, tracks.artist_id as TRACK_artist_id, tracks.album_id as TRACK_album_id, tracks.genre_id as TRACK_genre_id, tracks.duration as TRACK_duration, tracks.bpm as TRACK_bpm, tracks.volume_diff as TRACK_volume_diff, tracks.year as TRACK_year, tracks.last_lookup as TRACK_last_lookup, tracks.mb_verified as TRACK_mb_verified, tracks.mb_track_id as TRACK_mb_track_id, tracks._update_id3 as TRACK__update_id3, tracks.added as TRACK_added, tracks._archived as TRACK__archived, artists.id as ARTIST_id
+		$select = "SELECT tracks.id as TRACK_id, tracks.puid as TRACK_puid, tracks.tracknum as TRACK_tracknum, tracks.name as TRACK_name, tracks.artist_id as TRACK_artist_id, tracks.album_id as TRACK_album_id, tracks.genre_id as TRACK_genre_id, tracks.duration as TRACK_duration, tracks.bpm as TRACK_bpm, tracks.volume_diff as TRACK_volume_diff, tracks.year as TRACK_year, tracks.last_lookup as TRACK_last_lookup, tracks.mb_verified as TRACK_mb_verified, tracks.mb_track_id as TRACK_mb_track_id, tracks._update_id3 as TRACK__update_id3, tracks.added as TRACK_added, tracks._archived as TRACK__archived, artists.id as ARTIST_id
 				, artists.mb_id as ARTIST_mb_id, artists.name as ARTIST_name, albums.id as ALBUM_id
 				, albums.mb_id as ALBUM_mb_id, albums.name as ALBUM_name, albums.cd_number as ALBUM_cd_number, albums.album_artist_id as ALBUM_album_artist_id, albums.amazon_asin as ALBUM_amazon_asin, genres.id as GENRE_id
 				, genres.mb_id as GENRE_mb_id, genres.name as GENRE_name

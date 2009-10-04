@@ -14,11 +14,11 @@ while($track_list->getNext()) {
 	$source = new source();
 	if($source->getBestSource($track->id)) {
 		if($track->lookupTRM($source->path, "MB_ONLY")) {
-			print "lookup $track->trm ok\n";
+			print "lookup $track->puid ok\n";
 			$track->update("addslashes");
 		}
 		else {
-			print "lookup $track->trm FAILED\n";
+			print "lookup $track->puid FAILED\n";
 			$track->setField("last_lookup",date("Y-m-d"));
 		}
 	}

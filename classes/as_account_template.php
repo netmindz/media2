@@ -47,7 +47,7 @@ class as_account_template
 			'artists'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'as_accounts'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'as_spool_items'	=>	array ("pk"	=>	"id", "comment"	=>	""),
-			'cached_trms'	=>	array ("pk"	=>	"id", "comment"	=>	""),
+			'cached_puids'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'dead_sources'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'genres'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'hosts'	=>	array ("pk"	=>	"id", "comment"	=>	""),

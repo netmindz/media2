@@ -1,7 +1,7 @@
 <?
-class cached_trm_template
+class cached_puid_template
 {
-	var $id, $path, $trm;
+	var $id, $path, $puid;
 	
 	var $database, $lastError, $DN;
 	var $_PK, $_table;
@@ -15,7 +15,7 @@ class cached_trm_template
 	 * @return void
 	 * @desc This is the PHP4 constructor. It calles the PHP5 constructor __construct()
 	 */
-	function cached_trm_template()
+	function cached_puid_template()
 	{
 		$this->__construct();
 	}//PHP4 constructor
@@ -32,12 +32,12 @@ class cached_trm_template
 		$this->id = 0;
 
 		$this->path = "";
-		$this->trm = "";
+		$this->puid = "";
 		
 		$this->database = new database();
 		$this->_PK = 'id';
 		$this->_PKs = array('id');
-		$this->_table = 'cached_trms';
+		$this->_table = 'cached_puids';
 		$this->_data_format = 'php';
 		$this->_labels = array(); 
 		$this->_form_label_ids = array();
@@ -46,7 +46,7 @@ class cached_trm_template
 			'artists'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'as_accounts'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'as_spool_items'	=>	array ("pk"	=>	"id", "comment"	=>	""),
-			'cached_trms'	=>	array ("pk"	=>	"id", "comment"	=>	""),
+			'cached_puids'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'dead_sources'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'genres'	=>	array ("pk"	=>	"id", "comment"	=>	""),
 			'hosts'	=>	array ("pk"	=>	"id", "comment"	=>	""),
@@ -58,7 +58,7 @@ class cached_trm_template
 
 		$this->_field_descs['id'] = array ("pk" => "1", "auto" => "1", "type" => "int(10) unsigned", "length" => "10", "gen_type" => "int");
 		$this->_field_descs['path'] = array ("type" => "text", "gen_type" => "text");
-		$this->_field_descs['trm'] = array ("type" => "varchar(150)", "length" => "150", "gen_type" => "string");
+		$this->_field_descs['puid'] = array ("type" => "varchar(150)", "length" => "150", "gen_type" => "string");
 
 	}//__constructor
 	
@@ -73,15 +73,15 @@ class cached_trm_template
 	function add() {
 		
 		if($this->id != (int)$this->id && $this->id!='NOW()' && $this->id!='NULL'){
-			trigger_error("wrong type for cached_trm->id",E_USER_WARNING);
+			trigger_error("wrong type for cached_puid->id",E_USER_WARNING);
 			settype($this->id,"int");
 		}//IF
 
 
 		
-		$raw_sql  = "INSERT INTO cached_trms (`path`, `trm`)";
+		$raw_sql  = "INSERT INTO cached_puids (`path`, `puid`)";
 		
-		$raw_sql.= " VALUES ('".$this->database->escape($this->path)."', '".$this->database->escape($this->trm)."')";
+		$raw_sql.= " VALUES ('".$this->database->escape($this->path)."', '".$this->database->escape($this->puid)."')";
 		
 		$raw_sql = str_replace("'NOW()'", "NOW()", $raw_sql);		//remove quotes
 		$sql = str_replace("'NULL'", "NULL", $raw_sql);			//remove quotes
@@ -107,13 +107,13 @@ class cached_trm_template
 	{
 	
 		if($this->id != (int)$this->id && $this->id!='NOW()' && $this->id!='NULL'){
-			trigger_error("wrong type for cached_trm->id",E_USER_WARNING);
+			trigger_error("wrong type for cached_puid->id",E_USER_WARNING);
 			settype($this->id,"int");
 		}//IF
 
 
-		$raw_sql  = "UPDATE cached_trms SET ";
-		$raw_sql.= "`path`='".$this->database->escape($this->path)."', `trm`='".$this->database->escape($this->trm)."'";
+		$raw_sql  = "UPDATE cached_puids SET ";
+		$raw_sql.= "`path`='".$this->database->escape($this->path)."', `puid`='".$this->database->escape($this->puid)."'";
 		$raw_sql.= " WHERE 
 		id = '".$this->database->escape($this->id)."'";
 		
@@ -142,9 +142,9 @@ class cached_trm_template
 		
 		//define the SQL to use to UPDATE the field...
 		if ($this->_field_descs[$fieldname]['gen_type'] == 'int' || $this->$fieldname == "NULL" || $this->$fieldname == "NOW()")
-			$sql = "UPDATE cached_trms SET $fieldname = ".$this->$fieldname;
+			$sql = "UPDATE cached_puids SET $fieldname = ".$this->$fieldname;
 		else
-			$sql = "UPDATE cached_trms SET $fieldname = '".$this->database->escape($this->$fieldname)."'";
+			$sql = "UPDATE cached_puids SET $fieldname = '".$this->database->escape($this->$fieldname)."'";
 		
 		
 		//Now add the WHERE clause
@@ -181,7 +181,7 @@ class cached_trm_template
 	 */
 	function delete($id)
 	{
-		$sql = "DELETE FROM cached_trms WHERE id = '".$this->database->escape($id)."' ";
+		$sql = "DELETE FROM cached_puids WHERE id = '".$this->database->escape($id)."' ";
 		
 		if ($this->database->query($sql))
 			return true;
@@ -202,7 +202,7 @@ class cached_trm_template
 	function getList($where="", $order="", $limit="")
 	{
 		if(!$order) $order = "";
-		$select = "SELECT cached_trms.* FROM cached_trms ";
+		$select = "SELECT cached_puids.* FROM cached_puids ";
 		if ($this->database->query("$select $where $order $limit")) {
 			return($this->database->RowCount);
 		}else{
@@ -353,7 +353,7 @@ class cached_trm_template
 					$child = new $child_class();
 					if($this->_field_descs[$key]['gen_type'] == "many2many") {
 					
-	                        $child->_setPropertiesLinkages("cached_trm", $this->id, array_keys($value));
+	                        $child->_setPropertiesLinkages("cached_puid", $this->id, array_keys($value));
                         
 					}
 					else {
@@ -619,7 +619,7 @@ class cached_trm_template
 				$fk = new $fk_class();
 				if($this->_field_descs[$property]['gen_type'] == "many2many") {
 				
-						$html .= $fk->createMatrix($input_name,"cached_trm",$this->id);
+						$html .= $fk->createMatrix($input_name,"cached_puid",$this->id);
 						
 				}
 				elseif($fk_class == "image") {
@@ -653,7 +653,7 @@ class cached_trm_template
 			  case 'number' :
 				preg_match ("/\((\d+)\)/", $this->_field_descs[$property]['type'], $matches);		//get field length
 				if (isset($matches[1]) && ($matches[1] ==1 || 			//a tiny int of display length 1 char is presumed to be a boolean
-						(isset($CONF['cached_trm'][$property]['max']) && $CONF['cached_trm'][$property]['max']==1)) ){		//or setting the max value to 1 presumes a boolean
+						(isset($CONF['cached_puid'][$property]['max']) && $CONF['cached_puid'][$property]['max']==1)) ){		//or setting the max value to 1 presumes a boolean
 					$html.= "<input type=\"radio\" name=\"$input_name\" value=\"1\" id=\"$html_id\"";
 					if($property_value)	//allow any possible value for True
 						$html.= " checked";
@@ -666,12 +666,12 @@ class cached_trm_template
 					
 					break;	//escape SWITCH statement
 					
-				}elseif (isset($CONF['cached_trm'][$property]['max']) && $CONF['cached_trm'][$property]['max']){
-					$min = ($CONF['cached_trm'][$property]['min'])? $CONF['cached_trm'][$property]['min'] : 0;
-					$step = ($CONF['cached_trm'][$property]['step'])? $CONF['cached_trm'][$property]['step'] : 1;
+				}elseif (isset($CONF['cached_puid'][$property]['max']) && $CONF['cached_puid'][$property]['max']){
+					$min = ($CONF['cached_puid'][$property]['min'])? $CONF['cached_puid'][$property]['min'] : 0;
+					$step = ($CONF['cached_puid'][$property]['step'])? $CONF['cached_puid'][$property]['step'] : 1;
 					if ($empty=='-None-')
 						$empty = '--';
-					$html.= createNumberSelect($input_name, $property_value, $min, $CONF['cached_trm'][$property]['max'], $step, $empty);
+					$html.= createNumberSelect($input_name, $property_value, $min, $CONF['cached_puid'][$property]['max'], $step, $empty);
 					break;	//escape SWITCH statement
 				}//IF integer is a Boolean
 				
@@ -686,8 +686,8 @@ class cached_trm_template
 				else
 					$maxlength = 11;
 				
-				if (isset($CONF['cached_trm'][$property]['size']))
-					$size = $CONF['cached_trm'][$property]['size'];
+				if (isset($CONF['cached_puid'][$property]['size']))
+					$size = $CONF['cached_puid'][$property]['size'];
 				elseif($maxlength <= 30)
 					$size = $maxlength+1;
 				elseif ($maxlength <= 50)
@@ -785,11 +785,11 @@ class cached_trm_template
 						$future = 5;
 					}//IF date of birth field
 					
-					if (isset($CONF['cached_trm'][$property]['past']))
-						$past = $CONF['cached_trm'][$property]['past'];
+					if (isset($CONF['cached_puid'][$property]['past']))
+						$past = $CONF['cached_puid'][$property]['past'];
 					
-					if (isset($CONF['cached_trm'][$property]['future']))
-						$future = $CONF['cached_trm'][$property]['future'];
+					if (isset($CONF['cached_puid'][$property]['future']))
+						$future = $CONF['cached_puid'][$property]['future'];
 					
 					$html.= createDateSelect($input_name, $property_value, $past, $future);
 					$separator = " @ ";

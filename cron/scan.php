@@ -165,7 +165,7 @@ print "\n\n";
 
 $db = new Database();
 $source = new source();
-$db->query("select sources.id as source_id from sources left join tracks on track_id=tracks.id where tracks.trm is null");
+$db->query("select sources.id as source_id from sources left join tracks on track_id=tracks.id where tracks.puid is null");
 print "deleting stale sources missing track";
 while($row = $db->getNextRow()) {
 	$source->delete($row['source_id']);
@@ -175,7 +175,7 @@ print "\n\n";
 
 $db = new Database();
 $dead_source = new dead_source();
-$db->query("select dead_sources.id as source_id from dead_sources left join tracks on dead_sources.notes=tracks.trm where tracks.trm is not null");
+$db->query("select dead_sources.id as source_id from dead_sources left join tracks on dead_sources.notes=tracks.puid where tracks.puid is not null");
 print "deleting dead sources where track now exists";
 while($row = $db->getNextRow()) {
 	$dead_source->delete($row['source_id']);

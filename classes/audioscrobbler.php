@@ -17,13 +17,13 @@ class audioscrobbler
 
 	function send()
 	{
-		$sql = "select artist_id,as_spool_items.id as as_id,artists.name as artist,tracks.name as track_name, albums.name as album,trm,time_to_sec(duration) as length, played 
+		$sql = "select artist_id,as_spool_items.id as as_id,artists.name as artist,tracks.name as track_name, albums.name as album,puid,time_to_sec(duration) as length, played 
 		from tracks,as_spool_items,as_accounts,artists,albums
 		where tracks.artist_id = artists.id and albums.id=album_id and tracks.id=as_spool_items.track_id and as_spool_items.as_account_id = as_accounts.id
 		and as_accounts.username = '$this->user' and tracks.name != '' and artists.name != '' and albums.name != ''
 		order by played limit 0,5";
 		
-		/*$sql = "select artist_id,as_spool_items.id as as_id,artists.name as artist,tracks.name as track_name, albums.name as album,trm,time_to_sec(duration) as length, played from tracks,as_spool_items,as_accounts
+		/*$sql = "select artist_id,as_spool_items.id as as_id,artists.name as artist,tracks.name as track_name, albums.name as album,puid,time_to_sec(duration) as length, played from tracks,as_spool_items,as_accounts
 		join artists on ( `tracks`.`artist_id` = `artists`.`id` ) join albums on (albums.id=album_id)
 		where tracks.id=as_spool_items.track_id and as_spool_items.as_account_id = as_accounts.id
 		and as_accounts.username = '$this->user' and tracks.name != '' and artists.name != '' and albums.name != ''
@@ -45,7 +45,7 @@ class audioscrobbler
 						$post["a[$i]"] = utf8_encode($row['artist']);
 						$post["t[$i]"] = utf8_encode($row['track_name']);
 						$post["b[$i]"] = utf8_encode($row['album']);
-						$post["m[$i]"] = utf8_encode($row['trm']);
+						$post["m[$i]"] = utf8_encode($row['puid']);
 						$post["l[$i]"] = utf8_encode($row['length']);
 						$post["i[$i]"] = utf8_encode($played);
 						$as_list[] = $row['as_id'];

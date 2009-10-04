@@ -1,16 +1,16 @@
 <?
-require("cached_trm_template.php");
+require("cached_puid_template.php");
 
-class cached_trm extends cached_trm_template {
+class cached_puid extends cached_puid_template {
 
 	function lookup($path)
 	{
 		return($this->getByOther(array("path"=>$path)));
 	}
 	
-	function cache($path,$trm)
+	function cache($path,$puid)
 	{
-		$this->setProperties(array('path'=>$path,'trm'=>$trm),"addslashed");
+		$this->setProperties(array('path'=>$path,'puid'=>$puid),"addslashed");
 		return($this->add());
 	}
 

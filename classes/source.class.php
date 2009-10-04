@@ -1,5 +1,5 @@
 <?
-require("cached_trm.class.php");
+require("cached_puid.class.php");
 
 
 require("source_template.php");
@@ -36,11 +36,11 @@ class source extends source_template {
 			//*****************************************
 			if($this->type != "dir") $this->getBitrate();
 			
-			$trm = $this->getTrm();
+			$puid = $this->getTrm();
 			
-			if($trm) {
+			if($puid) {
 				$track = new track();
-				$track->lookupOrAdd($trm,$this->path);
+				$track->lookupOrAdd($puid,$this->path);
 				$this->track_id = $track->id;
 			
 				if($this->track_id)	{
@@ -49,11 +49,11 @@ class source extends source_template {
 					return($this->add("addslashes"));
 				}
 				else {
-					$this->logDeadSource($path,"track_id failed",$trm);
+					$this->logDeadSource($path,"track_id failed",$puid);
 				}
 			}
 			else {
-				$this->logDeadSource($path,"trm failed");
+				$this->logDeadSource($path,"puid failed");
 			}
 		}		
 	}		
@@ -100,23 +100,23 @@ class source extends source_template {
 	{
 		exec("id3info \"$this->path\" | grep 'MusicBrainz TRM Id' | awk '{ print $10}'",$id3results);
 		if(count($id3results)) {
-			$trm = trim($id3results[0]);
+			$puid = trim($id3results[0]);
 		}
 		else {
-			$trm = "";
+			$puid = "";
 		}
-		if(ereg('^[0-9a-z-]+$',$trm)) {
-			print "got trm from ID3 ($trm)\n";
-			return($trm);
+		if(ereg('^[0-9a-z-]+$',$puid)) {
+			print "got puid from ID3 ($puid)\n";
+			return($puid);
 		}
 		else {
 			if(count($id3results)) print_r($id3results);
 		}
 		
-		$cached_trm = new cached_trm();
-		if($cached_trm->lookup($this->path)) {
-			print "got trm from cache ($cached_trm->trm)\n";
-			return($cached_trm->trm);
+		$cached_puid = new cached_puid();
+		if($cached_puid->lookup($this->path)) {
+			print "got puid from cache ($cached_puid->puid)\n";
+			return($cached_puid->puid);
 		}
 		else {
 			$path = $this->path;
@@ -133,17 +133,17 @@ class source extends source_template {
 				unset($results);
 				#print "getTRM($this->path)";
 				print "getTRM()";
-				exec("trm \"$path\" 2>&1",$results,$return);
+				exec("puid \"$path\" 2>&1",$results,$return);
 				if(($return == 0)&&(ereg('^[0-9a-z_-]+$',trim($results[0])))) {
-					$trm = $results[0];
-					$cached_trm->cache($this->path,$trm);
+					$puid = $results[0];
+					$cached_puid->cache($this->path,$puid);
 					if($is_tmp) unlink($path);
-					return($trm);
+					return($puid);
 				}
 				else {
 					print_r($results);
 				}
-				print "Waiting to retry trm ...\n";
+				print "Waiting to retry puid ...\n";
 				sleep(5);
 				$sanity++;
 			}

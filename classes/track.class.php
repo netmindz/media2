@@ -7,15 +7,15 @@ require("track_template.php");
 
 class track extends track_template {
 		
-	function lookupOrAdd($trm,$path)
+	function lookupOrAdd($puid,$path)
 	{
-#		print "Looking up $trm for $path\n";
-		if($this->getByOther(array('trm'=>$trm))) {
+#		print "Looking up $puid for $path\n";
+		if($this->getByOther(array('puid'=>$puid))) {
 			$this->lookupTRM($path);
 			return(true);
 		}
 		else {
-			$this->trm = $trm;
+			$this->puid = $puid;
 			if($this->lookupTRM($path)) {
 				$this->added = "NOW()";
 				return($this->add());
@@ -28,12 +28,12 @@ class track extends track_template {
 	{
 		$details = $this->lookupMeta($path);
 		$details['mb_verified'] = 'n';
-		exec("gettrm $this->trm",$results);
+		exec("getpuid $this->puid",$results);
 		print "~";
 		
-		$trm_details_list = array();
+		$puid_details_list = array();
 		if(count($results) && trim($results[0]) == "That TRM is not in the database") {
-			print "Uknown TRM: $this->trm\n";
+			print "Uknown TRM: $this->puid\n";
 			$results = array();
 			if($mb_only) return(0);
 		}
@@ -46,13 +46,13 @@ class track extends track_template {
 					$key = 		strtolower($matches[1]);
 					$value = $matches[2];
 					$version[$key]++;
-					$trm_details_list[$version[$key]][$key] = $matches[2];
+					$puid_details_list[$version[$key]][$key] = $matches[2];
 				}
 			}
 			
-#			print_r($trm_details_list);	
-			foreach($trm_details_list as $trm_details_key=>$trm_details) {
-				foreach($trm_details as $key=>$value) {
+#			print_r($puid_details_list);	
+			foreach($puid_details_list as $puid_details_key=>$puid_details) {
+				foreach($puid_details as $key=>$value) {
 					$format_method = "format$key";
 						if(method_exists($this,$format_method)) {
 						$value = $this->$format_method($value);
@@ -64,15 +64,15 @@ class track extends track_template {
 						$percs[$key] = $perc;
 				}
 				if( (($percs['artist'] < 20)&&($percs['album'] < 20)&&($percs['track'] < 20)) || (!$details['title']) ) {
-					$use_details = $trm_details_key;
+					$use_details = $puid_details_key;
 				}
 			}
 			if($use_details) {
 				print "\n\n *** found MB entry, merging data\n";
 				#print_r($details);
-				#print_r($trm_details_list[$use_details]);
+				#print_r($puid_details_list[$use_details]);
 				
-				$details = array_merge($details,$trm_details_list[$use_details]);
+				$details = array_merge($details,$puid_details_list[$use_details]);
 				$details['mb_verified'] = 'y';
 				print "  *** Givies\n";
 				print_r($details);
@@ -86,7 +86,7 @@ class track extends track_template {
 
 		print_r($details);
 		#print_r($results);
-		#print_r($trm_details_list);
+		#print_r($puid_details_list);
 
 		// print_r($details);
 		if(trim($details['title']) != "") {
