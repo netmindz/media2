@@ -95,22 +95,30 @@ class source extends source_template {
 	
 	function getPUID()
 	{
-	/*
-		exec("id3info \"$this->path\" | grep 'MusicBrainz TRM Id' | awk '{ print $10}'",$id3results);
+		print "getPUID()";
+		if(eregi("\.ogg$",$this->path)) {
+			exec("ogginfo \"$this->path\" | grep MUSICIP_PUID | awk -F= '{ print $2}'", $id3results);
+		}
+		else {
+			exec("id3info \"$this->path\" | grep 'MusicBrainz TRM Id' | awk '{ print $10}'",$id3results);
+		}
+		
 		if(count($id3results)) {
 			$puid = trim($id3results[0]);
 		}
 		else {
 			$puid = "";
 		}
+		
 		if(ereg('^[0-9a-z-]+$',$puid)) {
-			print "got puid from ID3 ($puid)\n";
+			print "got puid from ID3/ogg ($puid)\n";
 			return($puid);
 		}
 		else {
 			if(count($id3results)) print_r($id3results);
 		}
 		
+/*
 		$cached_puid = new cached_puid();
 		if($cached_puid->lookup($this->path)) {
 			print "got puid from cache ($cached_puid->puid)\n";
@@ -130,10 +138,10 @@ class source extends source_template {
 			}
 			$sanity = 0;
 			$results = array("");
-			while((($results[0] == "")||(eregi("too busy",$results[0])))&&($sanity < 10)) { 
+			while((($results[0] == "")||(eregi("too busy",$results[0])))&&($sanity < 1)) { 
 				unset($results);
 				#print "getTRM($this->path)";
-				print "getPUID()";
+				print "puid";
 				exec("puid ".CLIENTID." \"$path\" 2>&1",$results,$return);
 				if(($return == 0)&&(ereg('^[0-9a-z_-]+$',trim($results[0])))) {
 					$puid = $results[0];
