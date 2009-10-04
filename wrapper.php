@@ -25,9 +25,9 @@ if(!$source->path) {
 }
 
 
-if(!is_file($source->path)) {
+if(!is_readable($source->path)) {
 	header("HTTP/1.0 404 Not Found");
-	print "source was not found for track $track_id";
+	print "source file $source->path was not found for track $track_id";
 	system("echo \"(404)\t" . addslashes($source->path) . "\" >> /tmp/music_error.log");
 //	print_r($source);
 	exit();
