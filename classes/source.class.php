@@ -133,6 +133,7 @@ class source extends source_template {
 				$path = "/tmp/" . eregi_replace('[^a-z0-9]','',basename($this->path)) . ".wav";
 				exec("mpg321 -q -w \"$path\" \"$this->path\"");
 				exec("oggenc -Q $path");
+				unlink($path);
 				$path = ereg_replace("\.wav",".ogg",$path);
 				$is_tmp = true;
 			}
@@ -143,10 +144,10 @@ class source extends source_template {
 				#print "getTRM($this->path)";
 				print "puid";
 				exec("puid ".CLIENTID." \"$path\" 2>&1",$results,$return);
+				if($is_tmp) unlink($path);
 				if(($return == 0)&&(ereg('^[0-9a-z_-]+$',trim($results[0])))) {
 					$puid = $results[0];
 //					$cached_puid->cache($this->path,$puid);
-					if($is_tmp) unlink($path);
 					return($puid);
 				}
 				else {
