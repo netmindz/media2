@@ -48,6 +48,7 @@ header("Content-Length: ".filesize($source->path));
 header("Content-Disposition: attachment;filename=" . basename($source->path));
 
 $headers = getallheaders();
+$range = 0;
 if ( isset( $headers['Range'] ) )
 {
 	$range =$headers['Range'];
