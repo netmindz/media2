@@ -1,7 +1,7 @@
 <? ini_set("include_path",".:classes:includes:" . ini_get("include_path")); ?>
 <?
 require("includes/standard.inc.php");
-require("includes/amazon.inc.php");
+require("/home/www/codebase/amazon.inc.php");
 
 function track_header()
 {
