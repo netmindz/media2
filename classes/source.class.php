@@ -182,5 +182,53 @@ class source extends source_template {
 		else
 			return false;
 	}
+	
+	function updateID3()
+	{
+		$track = $this->getTrack();
+		$album = $track->getAlbum();
+		$genre = $track->getGenre();
+		$artist = $track->getArtist();
+
+		$cmd = "";		
+		if(preg_match('/\.ogg$/i',$this->path)) {
+
+			exec("vorbiscomment " . escapeshellarg($this->path),$res,$error);
+			foreach($res as $line) {
+				list($k,$v) = explode("=",trim($line));
+				$tags[strtoupper($k)] = $v;
+			}
+			unset($res);
+			if($error) {
+				trigger_error("Failed to read existing tags");
+			}
+			
+			$cmd = "vorbiscomment ";
+			$tags['TITLE'] = $track->name;
+			$tags['ARTIST'] = $artist->name;
+			$tags['GENRE'] = $genre->name;
+			$tags['DATE'] = $track->year;
+			$tags['ALBUM'] = $album->name;
+			$tags['TRACKNUMBER'] = $track->tracknum;
+			if($album->cd_number) $tag['DISCNUMBER'] = $album->cd_number;
+			foreach($tags as $k=>$v) {
+				$cmd .= "-t " . escapeshellarg("$k=$v") . " -w "; 
+			}
+		}
+		else { 
+			$cmd = "id3tag --v2tag ";
+			$cmd .= "--artist=".escapeshellarg($artist->name)." ";
+			$cmd .= "--album=".escapeshellarg($album->name)." ";
+			$cmd .= "--song=".escapeshellarg($track->name)."  ";
+			$cmd .= "--year=".escapeshellarg($track->year)."  ";
+			$cmd .= "--track=".escapeshellarg($track->tracknum)." ";
+			$cmd .= "--genre=".escapeshellarg($genre->name)." ";
+		}
+		if($cmd) {
+			#print "\t\tcmd: $cmd\n";
+			exec("$cmd " . escapeshellarg($this->path) . " 2>&1",$results,$error);
+			if($error) print_r($results);
+		}
+	}
 }
 ?>
