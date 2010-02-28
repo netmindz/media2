@@ -28,9 +28,8 @@ while($tracks->getNext()) {
 	$artist_id = 0;
 	if(ereg('^/?([0-9]*) ?-? ?(.+) [/-] (.+)$',$tracks->name,$matches)) {
 		$artist = $matches[2];
-		$artist_id = $artist_ids[$artist];
 		$name = $matches[3];
-		if(!$artist_id) {
+		if(isset($artist_ids[$artist])) {
 			$artist = $matches[3];
 			$artist_id = $artist_ids[$artist];
 			$name = $matches[2];
@@ -42,6 +41,9 @@ while($tracks->getNext()) {
 			$track->artist_id = $artist_id;
 			$track->update();
 			print "Changing '$tracks->name' to '$name' by '$artist'\n";
+		}
+		else {
+			print "No Artist: $artist\n";
 		}
 	}
 	else {
