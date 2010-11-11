@@ -1,6 +1,7 @@
 <? require("header.inc"); ?>
 <?
 $properties = array("tracknum","name","artist_id","album_id","genre_id","year");
+$id = $_REQUEST['id'];
 settype($id,"int");
 
 if(isset($_POST['process'])) {

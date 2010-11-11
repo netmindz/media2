@@ -15,7 +15,7 @@ if(isset($_POST['process'])) {
 	foreach($_POST['batch'] as $property=>$value) {
 		$tracks = new track();
 		if($value) {
-			$count = $tracks->batchUpdate($property,$value,"${type}_id=$id");
+			$count = $tracks->batchUpdate($property,$value,"${type}_id=" . $_POST['id']);
 			print "updated $count tracks' " . $tracks->createFormLabel($property) . " <br>\n";
 		}
 	}
