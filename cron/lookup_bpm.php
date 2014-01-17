@@ -26,7 +26,7 @@ while($tracks->getNext()) {
 			print_r($result);
 			continue;
 		}
-		$cmd =  "soundstretch $wav -bpm 2>&1 | tee /tmp/soundstretch.log | grep 'Detected BPM rate ' | awk '{ print $4}'";
+		$cmd =  "soundstretch $wav -bpm 2>&1 | grep 'Detected BPM rate ' | awk '{ print $4}'";
 		$bpm = trim(`$cmd`);
 		if($bpm > 0) {
 			print $bpm . "\n";

@@ -31,5 +31,5 @@ $CONF['meta_tables'] = array (
 );
 
 
-$CONF['music_base'] = "/music";
+$CONF['music_base'] = "/home/will/music";
 ?>

@@ -67,8 +67,9 @@ class music_list extends music_list_template {
 		}
 
 		
-		function getRandomList($limit,$username)
+		function getRandomList($limit,$username,$bpm=null)
 		{
+			if($bpm) $bpm_limit = "AND tracks.bpm between " . ($bpm - 5) . " AND " . ($bpm + 5);
 			if(!$username) exit("no username supplied to music_list::getRandomList()");
 			if(!$this->debug) $use_tempory_table = "temporary";
 			if($this->debug) {
@@ -135,7 +136,7 @@ class music_list extends music_list_template {
 				$select_sql .= "left join " . $scores_tables[$type] . " as ${type}_prefs on (tracks.${type}_id=${type}_prefs.id)\n";
 				$select_sql .= "left join " . $scores_tables_hour[$type] . " as ${type}_prefs_hour on (tracks.${type}_id=${type}_prefs_hour.id)\n	";
 			}
-			$select_sql .= " where tracks._archived != 'y' ";
+			$select_sql .= " where tracks._archived != 'y' $bpm_limit";
 
 
 			// ***********************************************************

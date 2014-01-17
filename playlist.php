@@ -9,6 +9,11 @@ else {
 	$id = 0;
 }
 
+$bpm = null;
+if(isset($_REQUEST['bpm'])) {
+	$bpm = $_REQUEST['bpm'];
+}
+
 $track = new music_list();
 if(isset($_GET['debug'])) $track->debug = $_GET['debug'];
 if($type == "like") {
@@ -20,7 +25,7 @@ elseif($type != "random") {
 	$list = $track->getTypeListPlaylist($type,$id);
 }
 else {
-	$list = $track->getRandomList(20,get_remote_username());
+	$list = $track->getRandomList(20,get_remote_username(),$bpm);
 }
 
 $pls = array();

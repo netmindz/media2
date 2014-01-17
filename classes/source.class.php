@@ -117,6 +117,7 @@ class source extends source_template {
 		else {
 			if(count($id3results)) print_r($id3results);
 		}
+		return("");
 		
 /*
 		$cached_puid = new cached_puid();
@@ -128,6 +129,7 @@ class source extends source_template {
 		*/
 			$path = $this->path;
 			$is_tmp = false;
+/*
 			if(!eregi('ogg$',$path)) {
 				print "Transcode()\n";	
 				$path = "/tmp/" . eregi_replace('[^a-z0-9]','',basename($this->path)) . ".wav";
@@ -137,6 +139,7 @@ class source extends source_template {
 				$path = ereg_replace("\.wav",".ogg",$path);
 				$is_tmp = true;
 			}
+*/
 			$sanity = 0;
 			$results = array("");
 			while((($results[0] == "")||(eregi("too busy",$results[0])))&&($sanity < 1)) { 

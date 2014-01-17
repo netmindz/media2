@@ -55,12 +55,12 @@ function get_remote_username()
 */
 function get_http_mount_point()
 {
-	//if(!ereg('^192\.168\.1\.|^192\.168\.42|^192\.168\.1\.188',ip_get_visitor())) {
-		$mount = "flat.netmindz.net/~will/music2";
-	/*}
+	if(ereg('^192\.168\.1\.|^10\.0\.10\.|^87\.194\.161\.',ip_get_visitor())) {
+		$mount = "10.0.10.254/~will/music2";
+	}
 	else {
-		$mount = "wtatam.premierit.com/music2";
-	}*/
+		$mount = "flat.netmindz.net/~will/music2";
+	}
 	return($mount);
 }
 
@@ -68,5 +68,5 @@ $track_type_list = array("artist","album","genre");
 
 #$CONF['rpms'] = array("libmusicbrainz-cli","libtunepimp","gjay","php-pear-XML-Serializer","libtunepimp-tools");
 $CONF['rpms'] = array("libtunepimp","php-pear-XML-Serializer");
-$CONF['commands'] = array("puid","ogginfo","id3info","mp3info","mpg321");
+$CONF['commands'] = array("puid","ogginfo","id3info","mpg321");
 ?>

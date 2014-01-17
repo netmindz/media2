@@ -126,30 +126,6 @@ print $dead_source->database->RowCount;
 print "\n\n";
 
 
-$db = new Database();
-print "Deleting tracks orphened by artist or album ... ";
-$db->query("delete from tracks where artist_id not in (select id from artists) or album_id not in (select id from albums)");
-print $db->RowCount . " tracks affected\n";
-
-$db = new Database();
-print "Deleting track_prefs orphened by track ... ";
-$db->query("delete from track_prefs where track_id not in (select id from tracks)");
-print $db->RowCount . " track_prefs affected\n";
-
-$db = new Database();
-print "Deleting type_prefs orphened by artist, album or genre ... ";
-$db->query("delete from type_prefs where (type = 'artist' and type_id not in (select id from artists)) or (type = 'album' and type_id not in (select id from albums))  or (type = 'genres' and type_id not in (select id from genres)) ");
-print $db->RowCount . " track_prefs affected\n";
-
-$db = new Database();
-print "Deleting sources orphened by host ";
-$db->query("select host_id from sources left join hosts on host_id=hosts.id where hostname is null group by host_id");
-print $db->RowCount . " missing hosts\n";
-while($row = $db->getNextRow()) {
-	$db2 = new Database();
-	$db2->query("delete from sources where host_id=" . $row['host_id']);
-	print $db2->RowCount . " sources removed\n";
-}
 
 
 $db = new Database();
@@ -183,25 +159,13 @@ while($row = $db->getNextRow()) {
 }
 print "\n\n";
 
-foreach(array('artist','album','genre') as $type) {
-	print "Checking for ${type}s without any tracks\n";
-	$db = new Database();
-	$db->query("select ${type}s.id,${type}s.name,count(${type}_id) as track_count from ${type}s left join tracks on ${type}_id=${type}s.id group by ${type}s.id having track_count = 0");
-	while($row = $db->getNextRow()) {
-		$db2 = new Database();
-		$db2->query("delete from ${type}s where id=" . $row['id']);
-		print "Deleting $type " . $row['name'] . "\n";
-	}
-}
-
 if((!$argv[1])||($argv[1] == "localhost")) {
 	if(!$argv[1]) {
 		print "scanning all hosts\n";
 		$host = new host();
 		$host->getOnlineHosts("order by rand()");
 		while($host->getNext()) {
-			$url_base = ereg_replace('/$','',$host->url_base);
-			scan_directory($CONF['music_base'] . "/" . $url_base,$host->id);
+			scan_directory($host->url_base,$host->id);
 			check_existing_files($host->id);
 		}
 	}
@@ -215,20 +179,59 @@ if((!$argv[1])||($argv[1] == "localhost")) {
 		$host->add();
 	}
 	print "scanning local host ($host->id)\n";
-	scan_directory($CONF['music_base'],$host->id);
+	scan_directory($host->url_base,$host->id);
 	check_existing_files($host->id);
 }
 else {
 	$host = new host();
-	if($host->getByOther(array("hostname"=>$argv[1]))) {
+	$host->getList("where hostname='".$argv[1]."'");
+	while($host->getNext()) {
 		print "\n\nscanning host $host->DN\n";
 		$url_base = ereg_replace('/$','',$host->url_base);
-		scan_directory($CONF['music_base'] . "/" . $url_base,$host->id);
+		#scan_directory($CONF['music_base'] . "/" . $url_base,$host->id);
+		scan_directory($url_base,$host->id);
 		check_existing_files($host->id);
 	}	
 }
 
 print "\nHacking DB\n";
+
+$db = new Database();
+print "Deleting tracks orphened by artist or album ... ";
+$db->query("delete from tracks where artist_id not in (select id from artists) or album_id not in (select id from albums)");
+print $db->RowCount . " tracks affected\n";
+
+$db = new Database();
+print "Deleting track_prefs orphened by track ... ";
+$db->query("delete from track_prefs where track_id not in (select id from tracks)");
+print $db->RowCount . " track_prefs affected\n";
+
+$db = new Database();
+print "Deleting type_prefs orphened by artist, album or genre ... ";
+$db->query("delete from type_prefs where (type = 'artist' and type_id not in (select id from artists)) or (type = 'album' and type_id not in (select id from albums))  or (type = 'genres' and type_id not in (select id from genres)) ");
+print $db->RowCount . " track_prefs affected\n";
+
+$db = new Database();
+print "Deleting sources orphened by host ";
+$db->query("select host_id from sources left join hosts on host_id=hosts.id where hostname is null group by host_id");
+print $db->RowCount . " missing hosts\n";
+while($row = $db->getNextRow()) {
+	$db2 = new Database();
+	$db2->query("delete from sources where host_id=" . $row['host_id']);
+	print $db2->RowCount . " sources removed\n";
+}
+
+foreach(array('artist','album','genre') as $type) {
+	print "Checking for ${type}s without any tracks\n";
+	$db = new Database();
+	$db->query("select ${type}s.id,${type}s.name,count(${type}_id) as track_count from ${type}s left join tracks on ${type}_id=${type}s.id group by ${type}s.id having track_count = 0");
+	while($row = $db->getNextRow()) {
+		$db2 = new Database();
+		$db2->query("delete from ${type}s where id=" . $row['id']);
+		print "Deleting $type " . $row['name'] . "\n";
+	}
+}
+
 
 $db->query("update tracks set duration=0 where duration > '2:30:00'");
 
